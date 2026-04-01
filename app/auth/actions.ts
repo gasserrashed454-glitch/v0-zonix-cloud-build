@@ -23,7 +23,7 @@ export async function sendVerificationCode(email: string, type: 'signup' | 'stud
   
   try {
     await resend.emails.send({
-      from: 'Zonix Cloud <noreply@zonixcloud.com>',
+      from: 'Zonix System <onboarding@resend.dev>',
       to: email,
       subject: type === 'signup' ? 'Verify your Zonix Cloud account' : 'Verify your student status',
       html: `
