@@ -88,8 +88,34 @@ const tiers = [
   },
 ]
 
+type BillingPeriod = 'monthly' | 'quarterly' | 'yearly'
+
+const billingOptions: { value: BillingPeriod; label: string; discount: number }[] = [
+  { value: 'monthly', label: 'Monthly', discount: 0 },
+  { value: 'quarterly', label: 'Quarterly', discount: 5 },
+  { value: 'yearly', label: 'Yearly', discount: 10 },
+]
+
 export default function PricingPage() {
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
+  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('monthly')
+
+  const getPrice = (monthlyPrice: string, period: BillingPeriod) => {
+    if (!monthlyPrice.startsWith('$')) return monthlyPrice
+    const price = parseFloat(monthlyPrice.slice(1))
+    const option = billingOptions.find(o => o.value === period)
+    const discount = option?.discount || 0
+    const multiplier = period === 'yearly' ? 12 : period === 'quarterly' ? 3 : 1
+    const discountedPrice = price * multiplier * (1 - discount / 100)
+    return `$${discountedPrice.toFixed(2)}`
+  }
+
+  const getPeriodLabel = (period: BillingPeriod) => {
+    switch (period) {
+      case 'yearly': return '/year'
+      case 'quarterly': return '/quarter'
+      default: return '/month'
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -123,33 +149,35 @@ export default function PricingPage() {
         </div>
 
         {/* Billing Toggle */}
-        <div className="flex items-center justify-center gap-4 mb-12">
-          <span className={billingPeriod === 'monthly' ? 'font-medium' : 'text-muted-foreground'}>
-            Monthly
-          </span>
-          <button
-            onClick={() => setBillingPeriod(billingPeriod === 'monthly' ? 'yearly' : 'monthly')}
-            className="relative h-6 w-11 rounded-full bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-          >
-            <span
-              className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-primary transition-transform ${
-                billingPeriod === 'yearly' ? 'translate-x-5' : ''
+        <div className="flex items-center justify-center gap-2 mb-12">
+          {billingOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => setBillingPeriod(option.value)}
+              className={`relative px-4 py-2 rounded-lg transition-all ${
+                billingPeriod === option.value
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted hover:bg-muted/80 text-foreground'
               }`}
-            />
-          </button>
-          <span className={billingPeriod === 'yearly' ? 'font-medium' : 'text-muted-foreground'}>
-            Yearly
-            <Badge variant="secondary" className="ml-2">Save 20%</Badge>
-          </span>
+            >
+              {option.label}
+              {option.discount > 0 && (
+                <Badge 
+                  variant={billingPeriod === option.value ? 'secondary' : 'outline'} 
+                  className="ml-2 text-xs"
+                >
+                  -{option.discount}%
+                </Badge>
+              )}
+            </button>
+          ))}
         </div>
 
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {tiers.map((tier) => {
             const Icon = tier.icon
-            const yearlyPrice = tier.price.startsWith('$') 
-              ? `$${(parseFloat(tier.price.slice(1)) * 12 * 0.8).toFixed(2)}`
-              : tier.price
+            const displayPrice = getPrice(tier.price, billingPeriod)
 
             return (
               <Card 
@@ -182,15 +210,16 @@ export default function PricingPage() {
                 <CardContent className="flex-1">
                   <div className="text-center mb-6">
                     <span className="text-4xl font-bold">
-                      {billingPeriod === 'yearly' && tier.price.startsWith('$') 
-                        ? yearlyPrice 
-                        : tier.price}
+                      {tier.price.startsWith('$') ? displayPrice : tier.price}
                     </span>
                     <span className="text-muted-foreground ml-1">
-                      {billingPeriod === 'yearly' && tier.price.startsWith('$') 
-                        ? '/year' 
-                        : tier.period}
+                      {tier.price.startsWith('$') ? getPeriodLabel(billingPeriod) : tier.period}
                     </span>
+                    {tier.price.startsWith('$') && billingPeriod !== 'monthly' && (
+                      <div className="text-xs text-green-600 mt-1">
+                        Save {billingOptions.find(o => o.value === billingPeriod)?.discount}%
+                      </div>
+                    )}
                   </div>
                   <ul className="space-y-3">
                     {tier.features.map((feature) => (
