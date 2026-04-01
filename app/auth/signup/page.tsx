@@ -31,7 +31,11 @@ export default function SignUpPage() {
     if (result.success && result.code) {
       setExpectedCode(result.code)
       setStep('verify')
-      toast.success('Verification code sent to your email')
+      if ('devMode' in result && result.devMode) {
+        toast.success(`Dev Mode - Your verification code is: ${result.code}`, { duration: 10000 })
+      } else {
+        toast.success('Verification code sent to your email')
+      }
     } else {
       toast.error(result.error || 'Failed to send verification code')
     }

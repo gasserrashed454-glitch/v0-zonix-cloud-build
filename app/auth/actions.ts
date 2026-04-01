@@ -4,19 +4,22 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 function generateCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString()
 }
 
 export async function sendVerificationCode(email: string, type: 'signup' | 'student') {
-  const supabase = await createClient()
   const code = generateCode()
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+  
+  // Check if Resend API key is available
+  const resendApiKey = process.env.RESEND_API_KEY
+  if (!resendApiKey) {
+    // Dev mode - return code directly without sending email
+    console.log(`[DEV MODE] Verification code for ${email}: ${code}`)
+    return { success: true, code, devMode: true }
+  }
 
-  // Store verification code using service role would be ideal, but for now we'll use a different approach
-  // We'll store in auth metadata during signup
+  const resend = new Resend(resendApiKey)
   
   try {
     await resend.emails.send({
