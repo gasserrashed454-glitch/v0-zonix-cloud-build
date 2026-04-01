@@ -52,7 +52,7 @@ const aiNav = [
 ]
 
 const bottomNav = [
-  { title: 'Support', href: '/support', icon: HelpCircle },
+  { title: 'Support', href: '/dashboard/support', icon: HelpCircle },
   { title: 'Settings', href: '/dashboard/settings', icon: Settings },
 ]
 
@@ -208,6 +208,17 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
             </Link>
           )}
         </div>
+        
+        {/* Student verification for free users */}
+        {profile.tier === 'free' && !profile.student_verified && (
+          <Link 
+            href="/dashboard/student-verify" 
+            className="flex items-center gap-2 p-2 rounded-lg bg-green-50 border border-green-200 hover:bg-green-100 transition-colors"
+          >
+            <GraduationCap className="h-4 w-4 text-green-600" />
+            <span className="text-xs font-medium text-green-700">Are you a student? Get 50GB free!</span>
+          </Link>
+        )}
       </SidebarFooter>
     </Sidebar>
   )

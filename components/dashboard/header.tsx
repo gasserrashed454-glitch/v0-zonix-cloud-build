@@ -17,7 +17,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { signOut } from '@/app/auth/actions'
 import { type Profile } from '@/lib/types'
-import { Search, Bell, Plus, Upload, FolderPlus, LogOut, User, Settings, CreditCard, HelpCircle } from 'lucide-react'
+import { Search, Plus, Upload, FolderPlus, LogOut, User, Settings, CreditCard, HelpCircle } from 'lucide-react'
+import { NotificationsDropdown } from './notifications-dropdown'
 
 interface DashboardHeaderProps {
   profile: Profile
@@ -88,10 +89,7 @@ export function DashboardHeader({ profile }: DashboardHeaderProps) {
           </DropdownMenu>
 
           {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-4 w-4" />
-            <span className="absolute top-1 right-1 h-2 w-2 bg-primary rounded-full" />
-          </Button>
+          <NotificationsDropdown userId={profile.id} />
 
           {/* User menu */}
           <DropdownMenu>
@@ -125,7 +123,7 @@ export function DashboardHeader({ profile }: DashboardHeaderProps) {
                 <CreditCard className="h-4 w-4 mr-2" />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/support')}>
+              <DropdownMenuItem onClick={() => router.push('/dashboard/support')}>
                 <HelpCircle className="h-4 w-4 mr-2" />
                 Support
               </DropdownMenuItem>
