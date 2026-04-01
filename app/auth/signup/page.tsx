@@ -21,6 +21,7 @@ export default function SignUpPage() {
   const [verificationCode, setVerificationCode] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
+  const [showDevCode, setShowDevCode] = useState(false)
 
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault()
@@ -31,9 +32,13 @@ export default function SignUpPage() {
     if (result.success && result.code) {
       setExpectedCode(result.code)
       setStep('verify')
-      if ('devMode' in result && result.devMode) {
-        toast.success(`Dev Mode - Your verification code is: ${result.code}`, { duration: 10000 })
+      // Always show code in dev mode (when devMode flag is true)
+      const isDevMode = (result as { devMode?: boolean }).devMode === true
+      if (isDevMode) {
+        setShowDevCode(true)
+        toast.success(`Your verification code is: ${result.code}`, { duration: 15000 })
       } else {
+        setShowDevCode(false)
         toast.success('Verification code sent to your email')
       }
     } else {
@@ -164,6 +169,12 @@ export default function SignUpPage() {
             <p className="text-sm text-muted-foreground text-center">
               We sent a 6-digit code to <span className="font-medium text-foreground">{email}</span>
             </p>
+            {showDevCode && expectedCode && (
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Dev Mode - Your code:</p>
+                <p className="text-2xl font-mono font-bold text-primary tracking-widest">{expectedCode}</p>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="code">Verification code</Label>
               <Input
