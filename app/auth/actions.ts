@@ -150,17 +150,29 @@ export async function verifyStudentEmail(formData: FormData) {
   return { success: true }
 }
 
-export async function getCurrentUser() {
+export async function forgotPassword(email: string) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
   
-  if (!user) return null
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ||
+      `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/reset-password`,
+  })
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  if (error) {
+    return { success: false, error: error.message }
+  }
 
-  return profile
+  return { success: true }
+}
+
+export async function resetPassword(password: string) {
+  const supabase = await createClient()
+  
+  const { error } = await supabase.auth.updateUser({ password })
+
+  if (error) {
+    return { success: false, error: error.message }
+  }
+
+  return { success: true }
 }

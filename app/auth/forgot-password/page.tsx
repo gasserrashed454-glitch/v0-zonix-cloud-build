@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ZonixLogo } from '@/components/zonix-logo'
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
-import { resetPassword } from '../actions'
+import { forgotPassword } from '../actions'
 import { Spinner } from '@/components/ui/spinner'
 
 export default function ForgotPasswordPage() {
@@ -26,7 +26,7 @@ export default function ForgotPasswordPage() {
     }
 
     setIsLoading(true)
-    const result = await resetPassword(email)
+    const result = await forgotPassword(email)
     setIsLoading(false)
 
     if (result.success) {
