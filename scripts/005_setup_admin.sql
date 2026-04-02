@@ -1,5 +1,5 @@
 -- Set gasserrashed454@gmail.com as admin
--- Run this script to promote the user to admin role
+-- This grants full admin access to the admin panel
 
 UPDATE profiles 
 SET role = 'admin'
