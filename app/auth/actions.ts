@@ -11,11 +11,11 @@ function generateCode(): string {
 // Simple in-memory rate limiting (resets on server restart)
 // In production, use Redis or database for persistence
 const emailRateLimit = new Map<string, { count: number; resetTime: number }>()
-const RATE_LIMIT_MAX = 5
+const RATE_LIMIT_MAX = 10
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000 // 1 hour in milliseconds
 
-// Domains that bypass rate limiting
-const BYPASS_DOMAINS = ['.ae', '.gov', '.mil']
+// Domains that bypass rate limiting (UAE and government/military)
+const BYPASS_DOMAINS = ['.ae', '.gov.ae', '.gov', '.mil']
 
 // Check if email domain bypasses rate limit
 function bypassesRateLimit(email: string): boolean {
