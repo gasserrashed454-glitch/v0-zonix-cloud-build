@@ -34,7 +34,6 @@ export default function SignUpPage() {
     if (result.success && result.code) {
       setExpectedCode(result.code)
       setStep('verify')
-      // Always show code in dev mode (when devMode flag is true)
       const isDevMode = (result as { devMode?: boolean }).devMode === true
       if (isDevMode) {
         setShowDevCode(true)
@@ -43,8 +42,6 @@ export default function SignUpPage() {
         setShowDevCode(false)
         toast.success('Verification code sent to your email')
       }
-    } else if ((result as { rateLimited?: boolean }).rateLimited) {
-      toast.error(result.error || 'Too many attempts. Please try again later.', { duration: 10000 })
     } else {
       toast.error(result.error || 'Failed to send verification code')
     }

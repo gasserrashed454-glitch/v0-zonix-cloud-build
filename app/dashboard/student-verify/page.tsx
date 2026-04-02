@@ -64,8 +64,6 @@ export default function StudentVerifyPage() {
       } else {
         toast.success('Verification code sent to your school email')
       }
-    } else if ((result as { rateLimited?: boolean }).rateLimited) {
-      toast.error(result.error || 'Too many attempts. Please try again later.', { duration: 10000 })
     } else {
       toast.error(result.error || 'Failed to send verification code')
     }

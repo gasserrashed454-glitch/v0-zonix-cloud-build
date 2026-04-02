@@ -25,11 +25,12 @@ export default function LoginPage() {
 
     if (result?.error) {
       toast.error(result.error)
-      setIsLoading(false)
     } else if (result?.success) {
       toast.success('Signed in successfully!')
       router.push('/dashboard')
     }
+    
+    setIsLoading(false)
   }
 
   return (
