@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ZonixLogo } from '@/components/zonix-logo'
+import { Footer } from '@/components/footer'
 import { 
   Cloud, 
   Shield, 
@@ -270,22 +271,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-12">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <ZonixLogo size="sm" />
-            <nav className="flex items-center gap-6 text-sm text-muted-foreground">
-              <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-              <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-              <Link href="/support" className="hover:text-foreground transition-colors">Support</Link>
-              <a href="mailto:gassetrashed454@gmail.com" className="hover:text-foreground transition-colors">Contact</a>
-            </nav>
-            <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} Zonix Cloud
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
