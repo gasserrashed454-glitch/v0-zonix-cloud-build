@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { AdminSidebar } from '@/components/admin/sidebar'
+import { AdminHeader } from '@/components/admin/admin-header'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 
 export default async function AdminLayout({
@@ -30,7 +31,10 @@ export default async function AdminLayout({
     <SidebarProvider>
       <AdminSidebar userRole={profile.role} />
       <SidebarInset className="flex flex-col min-h-screen">
-        {children}
+        <AdminHeader userEmail={user.email} />
+        <main className="flex-1 overflow-auto">
+          {children}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   )
