@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ fileId: string }> }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -11,13 +11,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   const body = await req.json()
   const { name } = body
-  const { id } = params
+  const { fileId } = await params
 
   // Verify user owns the file
   const { data: file } = await supabase
     .from('files')
     .select('user_id')
-    .eq('id', id)
+    .eq('id', fileId)
     .single()
 
   if (!file || file.user_id !== user.id) {
@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const { data, error } = await supabase
     .from('files')
     .update({ name })
-    .eq('id', id)
+    .eq('id', fileId)
     .select()
     .single()
 
@@ -38,7 +38,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   return NextResponse.json(data)
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ fileId: string }> }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -46,13 +46,13 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { id } = params
+  const { fileId } = await params
 
   // Verify user owns the file
   const { data: file } = await supabase
     .from('files')
     .select('user_id')
-    .eq('id', id)
+    .eq('id', fileId)
     .single()
 
   if (!file || file.user_id !== user.id) {
@@ -62,7 +62,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const { error } = await supabase
     .from('files')
     .delete()
-    .eq('id', id)
+    .eq('id', fileId)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 })
