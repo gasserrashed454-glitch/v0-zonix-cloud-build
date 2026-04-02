@@ -43,6 +43,8 @@ export default function SignUpPage() {
         setShowDevCode(false)
         toast.success('Verification code sent to your email')
       }
+    } else if ((result as { rateLimited?: boolean }).rateLimited) {
+      toast.error(result.error || 'Too many attempts. Please try again later.', { duration: 10000 })
     } else {
       toast.error(result.error || 'Failed to send verification code')
     }

@@ -8,7 +8,63 @@ function generateCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString()
 }
 
+// Simple in-memory rate limiting (resets on server restart)
+// In production, use Redis or database for persistence
+const emailRateLimit = new Map<string, { count: number; resetTime: number }>()
+const RATE_LIMIT_MAX = 5
+const RATE_LIMIT_WINDOW = 60 * 60 * 1000 // 1 hour in milliseconds
+
+// Domains that bypass rate limiting
+const BYPASS_DOMAINS = ['.ae', '.gov', '.mil']
+
+// Check if email domain bypasses rate limit
+function bypassesRateLimit(email: string): boolean {
+  const domain = email.toLowerCase()
+  return BYPASS_DOMAINS.some(bypass => domain.endsWith(bypass))
+}
+
+// Check and update rate limit
+function checkRateLimit(email: string): { allowed: boolean; remaining: number; resetIn: number } {
+  // Bypass rate limit for certain domains
+  if (bypassesRateLimit(email)) {
+    return { allowed: true, remaining: 999, resetIn: 0 }
+  }
+
+  const now = Date.now()
+  const key = email.toLowerCase()
+  const record = emailRateLimit.get(key)
+
+  if (!record || now > record.resetTime) {
+    // First request or window expired - reset
+    emailRateLimit.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW })
+    return { allowed: true, remaining: RATE_LIMIT_MAX - 1, resetIn: RATE_LIMIT_WINDOW }
+  }
+
+  if (record.count >= RATE_LIMIT_MAX) {
+    // Rate limited
+    const resetIn = record.resetTime - now
+    return { allowed: false, remaining: 0, resetIn }
+  }
+
+  // Increment count
+  record.count++
+  emailRateLimit.set(key, record)
+  return { allowed: true, remaining: RATE_LIMIT_MAX - record.count, resetIn: record.resetTime - now }
+}
+
 export async function sendVerificationCode(email: string, type: 'signup' | 'student') {
+  // Check rate limit first
+  const rateLimit = checkRateLimit(email)
+  if (!rateLimit.allowed) {
+    const minutesLeft = Math.ceil(rateLimit.resetIn / 60000)
+    return { 
+      success: false, 
+      error: `Too many verification attempts. Please try again in ${minutesLeft} minutes.`,
+      rateLimited: true,
+      resetIn: rateLimit.resetIn
+    }
+  }
+
   const code = generateCode()
   
   // Check if Resend API key is available

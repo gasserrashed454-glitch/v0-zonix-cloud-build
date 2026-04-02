@@ -13,7 +13,21 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 
 type Step = 'email' | 'verify' | 'pending' | 'success'
 
-const eduDomains = ['.edu', '.ac.uk', '.edu.au', '.edu.cn', '.ac.jp', '.edu.sg', '.edu.my', '.school']
+// Educational domains - includes country-specific TLDs that are education-focused
+const eduDomains = [
+  // Generic educational
+  '.edu', '.edu.', '.ac.', '.school', '.university',
+  // Country-specific educational  
+  '.ac.uk', '.edu.au', '.edu.cn', '.ac.jp', '.edu.sg', '.edu.my', '.edu.in', '.edu.pk',
+  '.edu.br', '.edu.mx', '.edu.ar', '.edu.co', '.edu.pe', '.edu.ve', '.edu.ec',
+  '.edu.sa', '.edu.eg', '.edu.ng', '.edu.za', '.edu.ke', '.edu.gh',
+  '.ac.nz', '.ac.kr', '.ac.th', '.ac.id', '.edu.ph', '.edu.vn', '.edu.tw', '.edu.hk',
+  '.edu.tr', '.edu.pl', '.edu.ru', '.edu.ua', '.ac.il', '.ac.ir',
+  '.edu.es', '.edu.pt', '.edu.it', '.edu.fr', '.edu.de', '.edu.nl', '.edu.be',
+  // Country TLDs (for countries where students commonly use country domains)
+  '.ae', '.qa', '.kw', '.bh', '.om', '.jo', '.lb', '.sy', '.iq', '.ps', '.ye',
+  '.sa', '.eg', '.ma', '.dz', '.tn', '.ly', '.sd',
+]
 
 export default function StudentVerifyPage() {
   const [step, setStep] = useState<Step>('email')
@@ -50,6 +64,8 @@ export default function StudentVerifyPage() {
       } else {
         toast.success('Verification code sent to your school email')
       }
+    } else if ((result as { rateLimited?: boolean }).rateLimited) {
+      toast.error(result.error || 'Too many attempts. Please try again later.', { duration: 10000 })
     } else {
       toast.error(result.error || 'Failed to send verification code')
     }
@@ -111,7 +127,7 @@ export default function StudentVerifyPage() {
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    You must use an email ending in .edu, .ac.uk, or other recognized educational domains.
+                    Use your school/university email (.edu, .ac.uk, etc.) or a country domain email (.ae, .sa, .eg, etc.) to verify your student status.
                   </AlertDescription>
                 </Alert>
                 <div className="space-y-2">
