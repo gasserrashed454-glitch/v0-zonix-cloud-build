@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +15,7 @@ import { Mail, Lock, User, ArrowRight, CheckCircle } from 'lucide-react'
 type Step = 'email' | 'verify' | 'details'
 
 export default function SignUpPage() {
+  const router = useRouter()
   const [step, setStep] = useState<Step>('email')
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState('')
@@ -72,8 +74,11 @@ export default function SignUpPage() {
     
     if (result?.error) {
       toast.error(result.error)
-      setIsLoading(false)
+    } else if (result?.success) {
+      toast.success('Account created successfully!')
+      router.push('/dashboard')
     }
+    setIsLoading(false)
   }
 
   return (

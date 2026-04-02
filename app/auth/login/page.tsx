@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,6 +13,7 @@ import { signIn } from '../actions'
 import { Mail, Lock, ArrowRight } from 'lucide-react'
 
 export default function LoginPage() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -24,6 +26,9 @@ export default function LoginPage() {
     if (result?.error) {
       toast.error(result.error)
       setIsLoading(false)
+    } else if (result?.success) {
+      toast.success('Signed in successfully!')
+      router.push('/dashboard')
     }
   }
 

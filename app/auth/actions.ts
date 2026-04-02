@@ -66,7 +66,7 @@ export async function signUp(formData: FormData) {
     return { error: 'Invalid verification code' }
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { error, data } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -82,7 +82,24 @@ export async function signUp(formData: FormData) {
     return { error: error.message }
   }
 
-  redirect('/auth/verify-email')
+  // Create profile for new user
+  if (data.user) {
+    await supabase
+      .from('profiles')
+      .insert({
+        id: data.user.id,
+        email,
+        full_name: fullName,
+        tier: 'free',
+        role: 'user',
+        storage_limit: 5 * 1024 * 1024 * 1024, // 5 GB for free
+        upload_limit: 1024 * 1024 * 1024, // 1 GB
+        ai_daily_limit: 50,
+      })
+      .single()
+  }
+
+  return { success: true }
 }
 
 export async function signIn(formData: FormData) {
@@ -100,7 +117,7 @@ export async function signIn(formData: FormData) {
     return { error: error.message }
   }
 
-  redirect('/dashboard')
+  return { success: true }
 }
 
 export async function signOut() {
