@@ -76,7 +76,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
   const TierIcon = tierIcons[profile.tier]
 
   return (
-    <Sidebar className="border-r">
+    <Sidebar className="border-r" collapsible="icon">
       <SidebarHeader className="p-4">
         <Link href="/dashboard">
           <ZonixLogo size="md" />
@@ -92,6 +92,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))}
+                    tooltip={item.title}
                   >
                     <Link href={item.href}>
                       <item.icon className="h-4 w-4" />
@@ -115,6 +116,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === item.href}
+                    tooltip={item.title}
                   >
                     <Link href={item.href}>
                       <item.icon className="h-4 w-4" />
@@ -137,7 +139,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                 <SidebarMenu>
                   {profile.role === 'admin' && (
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')}>
+                      <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')} tooltip="Admin Panel">
                         <Link href="/admin">
                           <Shield className="h-4 w-4" />
                           <span>Admin Panel</span>
@@ -147,7 +149,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                   )}
                   {(profile.role === 'admin' || profile.role === 'mod' || profile.role === 'support') && (
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={pathname.startsWith('/support-panel')}>
+                      <SidebarMenuButton asChild isActive={pathname.startsWith('/support-panel')} tooltip="Support Panel">
                         <Link href="/support-panel">
                           <HelpCircle className="h-4 w-4" />
                           <span>Support Panel</span>
@@ -171,6 +173,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === item.href}
+                    tooltip={item.title}
                   >
                     <Link href={item.href}>
                       <item.icon className="h-4 w-4" />

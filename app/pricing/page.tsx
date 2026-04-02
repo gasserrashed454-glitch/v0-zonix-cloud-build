@@ -149,12 +149,12 @@ export default function PricingPage() {
         </div>
 
         {/* Billing Toggle */}
-        <div className="flex items-center justify-center gap-2 mb-12">
+        <div className="flex items-center justify-center gap-2 mb-12 flex-wrap">
           {billingOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => setBillingPeriod(option.value)}
-              className={`relative px-4 py-2 rounded-lg transition-all ${
+              className={`relative px-3 md:px-4 py-2 rounded-lg transition-all text-sm md:text-base ${
                 billingPeriod === option.value
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted hover:bg-muted/80 text-foreground'
@@ -174,7 +174,7 @@ export default function PricingPage() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-7xl mx-auto px-4 md:px-0">
           {tiers.map((tier) => {
             const Icon = tier.icon
             const displayPrice = getPrice(tier.price, billingPeriod)
