@@ -1,5 +1,8 @@
 {
+  "name": "cloud",
+  "assets": {
+    "directory": ".vercel/output/static"
+  },
   "compatibility_flags": ["nodejs_compat"],
   "compatibility_date": "2026-04-03"
 }
-
