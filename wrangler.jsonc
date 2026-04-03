@@ -1,9 +1,5 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "cloud",
-  "compatibility_date": "2026-04-03",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
+  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_date": "2026-04-03"
 }
 
