@@ -33,14 +33,18 @@ export async function POST(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     
     if (authError || !user) {
+      console.log('[v0] Ticket POST: User not authenticated')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { subject, description, priority } = await request.json()
 
     if (!subject || !description) {
+      console.log('[v0] Ticket POST: Missing subject or description')
       return NextResponse.json({ error: 'Subject and description required' }, { status: 400 })
     }
+
+    console.log('[v0] Creating ticket for user:', user.id, 'Subject:', subject)
 
     const { data: ticket, error } = await supabase
       .from('tickets')
@@ -55,8 +59,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
+      console.error('[v0] Ticket creation error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
+
+    console.log('[v0] Ticket created successfully:', ticket.id)
 
     // Log activity
     await supabase.from('activity_logs').insert({
@@ -67,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ticket })
   } catch (error) {
-    console.error('Create ticket error:', error)
+    console.error('[v0] Create ticket error:', error)
     return NextResponse.json({ error: 'Failed to create ticket' }, { status: 500 })
   }
 }

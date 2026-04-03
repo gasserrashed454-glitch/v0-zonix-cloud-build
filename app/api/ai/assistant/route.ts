@@ -9,6 +9,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
     }
 
+    console.log('[v0] AI Assistant received message:', message)
+
     // Build the conversation history
     const conversationHistory = history?.map((msg: { role: string; content: string }) => ({
       role: msg.role as 'user' | 'assistant',
@@ -30,6 +32,8 @@ Guidelines:
 - Use bullet points for listing features
 - Be encouraging about the Student tier for eligible users`
 
+    console.log('[v0] Calling Gemini API with', conversationHistory.length + 1, 'messages')
+
     const result = await generateText({
       model: 'google/gemini-1.5-flash',
       system: systemPrompt,
@@ -40,12 +44,14 @@ Guidelines:
       maxOutputTokens: 500,
     })
 
+    console.log('[v0] Gemini response received:', result.text.substring(0, 50) + '...')
+
     return NextResponse.json({ 
       response: result.text,
       success: true 
     })
   } catch (error) {
-    console.error('AI Assistant error:', error)
+    console.error('[v0] AI Assistant error:', error)
     return NextResponse.json(
       { 
         error: 'Failed to process request',
