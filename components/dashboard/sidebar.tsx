@@ -93,10 +93,11 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                     asChild
                     isActive={pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))}
                     tooltip={item.title}
+                    className="whitespace-nowrap overflow-hidden"
                   >
                     <Link href={item.href}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -117,10 +118,11 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                     asChild
                     isActive={pathname === item.href}
                     tooltip={item.title}
+                    className="whitespace-nowrap overflow-hidden"
                   >
                     <Link href={item.href}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -174,10 +176,11 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                     asChild
                     isActive={pathname === item.href}
                     tooltip={item.title}
+                    className="whitespace-nowrap overflow-hidden"
                   >
                     <Link href={item.href}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

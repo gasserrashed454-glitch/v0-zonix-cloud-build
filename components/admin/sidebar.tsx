@@ -92,16 +92,16 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
   return (
     <Sidebar className="border-r">
       <SidebarHeader className="border-b">
-        <div className="flex items-center gap-2 px-4 py-3">
-          <ZonixLogo className="h-8 w-8" />
-          <div className="flex flex-col">
-            <span className="font-semibold">Zonix Cloud</span>
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Shield className="h-3 w-3" />
-              Admin Panel
+        <Link href="/admin" className="flex items-center gap-2 px-4 py-3">
+          <ZonixLogo size="sm" showText={false} />
+          <div className="flex flex-col min-w-0">
+            <span className="font-semibold text-sm truncate">Zonix Cloud</span>
+            <span className="text-xs text-muted-foreground flex items-center gap-1 truncate">
+              <Shield className="h-3 w-3 shrink-0" />
+              Admin
             </span>
           </div>
-        </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -113,10 +113,10 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
                 const isActive = pathname === item.href
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={isActive}>
+                    <SidebarMenuButton asChild isActive={isActive} className="whitespace-nowrap overflow-hidden">
                       <Link href={item.href}>
-                        <Icon className="h-4 w-4" />
-                        <span>{item.title}</span>
+                        <Icon className="h-4 w-4 shrink-0" />
+                        <span className="truncate">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -129,10 +129,10 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
       <SidebarFooter className="border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild className="whitespace-nowrap overflow-hidden">
               <Link href="/dashboard">
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back to Dashboard</span>
+                <ArrowLeft className="h-4 w-4 shrink-0" />
+                <span className="truncate">Back to Dashboard</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

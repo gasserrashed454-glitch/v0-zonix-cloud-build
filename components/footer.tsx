@@ -12,7 +12,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <ZonixLogo className="h-6 w-6" />
+              <ZonixLogo size="sm" showText={false} />
               <span className="font-semibold">Zonix Cloud</span>
             </div>
             <p className="text-sm text-muted-foreground">
