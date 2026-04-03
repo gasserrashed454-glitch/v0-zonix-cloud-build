@@ -4,46 +4,62 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 function generateCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString()
 }
 
-export async function sendVerificationCode(email: string, type: 'signup' | 'student') {
-  const supabase = await createClient()
-  const code = generateCode()
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+function getRedirectUrl(path: string = ''): string {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  if (siteUrl) {
+    return `${siteUrl}${path}`
+  }
+  // For Vercel deployments, use the Vercel URL
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}${path}`
+  }
+  // Fallback - should not be used in production
+  return `http://localhost:3000${path}`
+}
 
-  // Store verification code using service role would be ideal, but for now we'll use a different approach
-  // We'll store in auth metadata during signup
+export async function sendVerificationCode(email: string, type: 'signup' | 'student') {
+  const code = generateCode()
+  
+  // Check if Resend API key is available
+  const resendApiKey = process.env.RESEND_API_KEY
+  if (!resendApiKey) {
+    // Dev mode - return code directly without sending email
+    console.log(`[DEV MODE] Verification code for ${email}: ${code}`)
+    return { success: true, code, devMode: true }
+  }
+
+  const resend = new Resend(resendApiKey)
   
   try {
     await resend.emails.send({
-      from: 'Zonix Cloud <noreply@zonixcloud.com>',
+      from: 'Zonix System <onboarding@resend.dev>',
       to: email,
       subject: type === 'signup' ? 'Verify your Zonix Cloud account' : 'Verify your student status',
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #0078D4; margin: 0;">Zonix Cloud</h1>
+            <h1 style="color: #3b82f6; margin: 0;">Zonix Cloud</h1>
           </div>
           <div style="background: #f8f9fa; border-radius: 8px; padding: 30px; text-align: center;">
             <h2 style="color: #1a1a1a; margin: 0 0 10px;">Your verification code</h2>
             <p style="color: #666; margin: 0 0 20px;">Enter this code to ${type === 'signup' ? 'verify your account' : 'verify your student status'}</p>
-            <div style="background: #0078D4; color: white; font-size: 32px; font-weight: bold; letter-spacing: 8px; padding: 20px; border-radius: 8px; margin: 0 auto; display: inline-block;">
+            <div style="background: #3b82f6; color: white; font-size: 32px; font-weight: bold; letter-spacing: 8px; padding: 20px; border-radius: 8px; margin: 0 auto; display: inline-block;">
               ${code}
             </div>
             <p style="color: #999; font-size: 14px; margin-top: 20px;">This code expires in 10 minutes</p>
           </div>
           <p style="color: #999; font-size: 12px; text-align: center; margin-top: 30px;">
-            If you didn&apos;t request this code, you can safely ignore this email.
+            Need help? Contact support at gasserrashed454@gmail.com
           </p>
         </div>
       `,
     })
     
-    return { success: true, code } // In production, don't return code - store securely
+    return { success: true, code }
   } catch (error) {
     console.error('Failed to send email:', error)
     return { success: false, error: 'Failed to send verification code' }
@@ -63,12 +79,11 @@ export async function signUp(formData: FormData) {
     return { error: 'Invalid verification code' }
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { error, data } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ||
-        `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/dashboard`,
+      emailRedirectTo: getRedirectUrl('/auth/verify-email'),
       data: {
         full_name: fullName,
       },
@@ -79,7 +94,24 @@ export async function signUp(formData: FormData) {
     return { error: error.message }
   }
 
-  redirect('/auth/verify-email')
+  // Create profile for new user
+  if (data.user) {
+    await supabase
+      .from('profiles')
+      .insert({
+        id: data.user.id,
+        email,
+        full_name: fullName,
+        tier: 'free',
+        role: 'user',
+        storage_limit: 5 * 1024 * 1024 * 1024, // 5 GB for free
+        upload_limit: 1024 * 1024 * 1024, // 1 GB
+        ai_daily_limit: 50,
+      })
+      .single()
+  }
+
+  return { success: true }
 }
 
 export async function signIn(formData: FormData) {
@@ -97,7 +129,7 @@ export async function signIn(formData: FormData) {
     return { error: error.message }
   }
 
-  redirect('/dashboard')
+  return { success: true }
 }
 
 export async function signOut() {
@@ -147,17 +179,28 @@ export async function verifyStudentEmail(formData: FormData) {
   return { success: true }
 }
 
-export async function getCurrentUser() {
+export async function forgotPassword(email: string) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
   
-  if (!user) return null
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: getRedirectUrl('/auth/reset-password'),
+  })
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  if (error) {
+    return { success: false, error: error.message }
+  }
 
-  return profile
+  return { success: true, message: `Password reset link sent to ${email}` }
+}
+
+export async function resetPassword(password: string) {
+  const supabase = await createClient()
+  
+  const { error } = await supabase.auth.updateUser({ password })
+
+  if (error) {
+    return { success: false, error: error.message }
+  }
+
+  return { success: true }
 }

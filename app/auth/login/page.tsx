@@ -13,8 +13,8 @@ import { signIn } from '../actions'
 import { Mail, Lock, ArrowRight } from 'lucide-react'
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -25,8 +25,12 @@ export default function LoginPage() {
 
     if (result?.error) {
       toast.error(result.error)
-      setIsLoading(false)
+    } else if (result?.success) {
+      toast.success('Signed in successfully!')
+      router.push('/dashboard')
     }
+    
+    setIsLoading(false)
   }
 
   return (
