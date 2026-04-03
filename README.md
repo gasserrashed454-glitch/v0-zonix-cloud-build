@@ -1,5 +1,14 @@
 # v0-zonix-cloud-build
 
+Zonix Cloud - Secure cloud storage with AI-powered file organization and real-time collaboration.
+
+**Latest Updates:**
+- ✅ Fixed UI menu text overflow issues
+- ✅ Fixed logo display in footer and admin panel  
+- ✅ Added floating AI chat with Google Gemini 1.5 Flash
+- ✅ Real-time ticket sync for support panel
+- ✅ Debug logging for API endpoints
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
 
 ## Built with v0
