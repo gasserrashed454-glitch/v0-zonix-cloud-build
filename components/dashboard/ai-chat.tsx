@@ -7,24 +7,28 @@ import { Card } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
 import { Send, Sparkles, Loader2 } from 'lucide-react'
-import { useChat } from 'ai/react'
-
-interface Message {
-  id: string
-  content: string
-  role: 'user' | 'assistant'
-  createdAt: Date
-}
+import { useChat } from '@ai-sdk/react'
+import { DefaultChatTransport } from 'ai'
 
 export function AIAssistantContent() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: '/api/ai/chat',
+  const [input, setInput] = useState('')
+  const { messages, sendMessage, status } = useChat({
+    transport: new DefaultChatTransport({ api: '/api/ai/chat' }),
     onError: (error) => {
       toast.error('Failed to send message')
       console.error(error)
     }
   })
+  
+  const isLoading = status === 'streaming' || status === 'submitted'
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!input.trim()) return
+    await sendMessage({ text: input })
+    setInput('')
+  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -63,22 +67,29 @@ export function AIAssistantContent() {
           </div>
         ) : (
           <>
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
+            {messages.map((message) => {
+              const text = message.parts
+                ?.filter((p): p is { type: 'text'; text: string } => p.type === 'text')
+                .map((p) => p.text)
+                .join('') || ''
+              
+              return (
                 <div
-                  className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded-lg ${
-                    message.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-foreground'
-                  }`}
+                  key={message.id}
+                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <p className="text-sm">{message.content}</p>
+                  <div
+                    className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded-lg ${
+                      message.role === 'user'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-foreground'
+                    }`}
+                  >
+                    <p className="text-sm">{text}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-muted px-4 py-2 rounded-lg">
@@ -96,7 +107,7 @@ export function AIAssistantContent() {
         <form onSubmit={handleSubmit} className="flex gap-2">
           <Input
             value={input}
-            onChange={handleInputChange}
+            onChange={(e) => setInput(e.target.value)}
             placeholder="Ask me something..."
             disabled={isLoading}
             className="flex-1"
