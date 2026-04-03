@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -40,10 +40,60 @@ interface SupportPanelContentProps {
   }>
 }
 
-export function SupportPanelContent({ profile, pendingVerifications, tickets }: SupportPanelContentProps) {
+export function SupportPanelContent({ profile, pendingVerifications, tickets: initialTickets }: SupportPanelContentProps) {
   const [verifications, setVerifications] = useState(pendingVerifications)
+  const [tickets, setTickets] = useState(initialTickets)
   const [searchQuery, setSearchQuery] = useState('')
   const supabase = createClient()
+
+  // Real-time subscription for tickets
+  useEffect(() => {
+    const ticketsChannel = supabase
+      .channel('tickets-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'tickets' },
+        async () => {
+          // Refetch all tickets on any change
+          const { data } = await supabase
+            .from('tickets')
+            .select('*, profiles(full_name, email)')
+            .order('created_at', { ascending: false })
+            .limit(50)
+          
+          if (data) {
+            setTickets(data)
+          }
+        }
+      )
+      .subscribe()
+
+    const verificationsChannel = supabase
+      .channel('verifications-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        async () => {
+          // Refetch pending verifications
+          const { data } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('student_verified', false)
+            .not('student_school', 'is', null)
+            .order('created_at', { ascending: false })
+          
+          if (data) {
+            setVerifications(data)
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(ticketsChannel)
+      supabase.removeChannel(verificationsChannel)
+    }
+  }, [supabase])
 
   async function approveStudent(userId: string) {
     const { error } = await supabase
@@ -263,7 +313,7 @@ export function SupportPanelContent({ profile, pendingVerifications, tickets }: 
                     {filteredTickets.map((ticket) => (
                       <Link
                         key={ticket.id}
-                        href={`/admin/tickets?id=${ticket.id}`}
+                        href={`/support-panel/ticket/${ticket.id}`}
                         className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-center gap-4">

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -71,11 +72,67 @@ export function SupportContent({ userId, initialTickets }: SupportContentProps) 
   const [messages, setMessages] = useState<Array<{id: string; message: string; sender_id: string; created_at: string}>>([])
   const [newMessage, setNewMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const supabase = createClient()
 
   // New ticket form state
   const [subject, setSubject] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState('1')
+
+  // Real-time subscription for tickets and messages
+  useEffect(() => {
+    const ticketsChannel = supabase
+      .channel('user-tickets')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'tickets', filter: `user_id=eq.${userId}` },
+        async () => {
+          const { data } = await supabase
+            .from('tickets')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+          
+          if (data) {
+            setTickets(data)
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(ticketsChannel)
+    }
+  }, [userId, supabase])
+
+  // Real-time subscription for messages when a ticket is selected
+  useEffect(() => {
+    if (!selectedTicket) return
+
+    const messagesChannel = supabase
+      .channel(`ticket-messages-${selectedTicket.id}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'ticket_messages', filter: `ticket_id=eq.${selectedTicket.id}` },
+        async () => {
+          const { data } = await supabase
+            .from('ticket_messages')
+            .select('*')
+            .eq('ticket_id', selectedTicket.id)
+            .eq('is_internal', false)
+            .order('created_at', { ascending: true })
+          
+          if (data) {
+            setMessages(data)
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(messagesChannel)
+    }
+  }, [selectedTicket, supabase])
 
   const handleCreateTicket = async () => {
     if (!subject.trim() || !description.trim()) return

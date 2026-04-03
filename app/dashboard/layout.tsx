@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { DashboardSidebar } from '@/components/dashboard/sidebar'
 import { DashboardHeader } from '@/components/dashboard/header'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
+import { FloatingAIChat } from '@/components/floating-ai-chat'
 
 export default async function DashboardLayout({
   children,
@@ -35,6 +36,7 @@ export default async function DashboardLayout({
           {children}
         </main>
       </SidebarInset>
+      <FloatingAIChat />
     </SidebarProvider>
   )
 }
