@@ -1,13 +1,14 @@
 import { createClient } from '@/lib/supabase/server'
 import { FileManager } from '@/components/dashboard/file-manager'
 import { notFound } from 'next/navigation'
-import { type Folder } from '@/lib/types'
 
 interface FolderPageProps {
   params: Promise<{ folderId: string }>
 }
 
-async function getBreadcrumbs(supabase: ReturnType<typeof createClient> extends Promise<infer T> ? T : never, folderId: string): Promise<{ id: string | null; name: string }[]> {
+type SupabaseClient = Awaited<ReturnType<typeof createClient>>
+
+async function getBreadcrumbs(supabase: SupabaseClient, folderId: string): Promise<{ id: string | null; name: string }[]> {
   const breadcrumbs: { id: string | null; name: string }[] = [{ id: null, name: 'My Files' }]
   
   let currentId: string | null = folderId
@@ -15,15 +16,15 @@ async function getBreadcrumbs(supabase: ReturnType<typeof createClient> extends 
   
   while (currentId && !visited.has(currentId)) {
     visited.add(currentId)
-    const { data: folder } = await supabase
+    const { data: folderData } = await supabase
       .from('folders')
       .select('id, name, parent_id')
       .eq('id', currentId)
       .single()
     
-    if (folder) {
-      breadcrumbs.splice(1, 0, { id: folder.id, name: folder.name })
-      currentId = folder.parent_id
+    if (folderData) {
+      breadcrumbs.splice(1, 0, { id: folderData.id, name: folderData.name })
+      currentId = folderData.parent_id
     } else {
       break
     }

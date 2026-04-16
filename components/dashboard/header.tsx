@@ -17,7 +17,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { signOut } from '@/app/auth/actions'
 import { type Profile } from '@/lib/types'
-import { Search, Bell, Plus, Upload, FolderPlus, LogOut, User, Settings, CreditCard, HelpCircle } from 'lucide-react'
+import { Search, Plus, Upload, FolderPlus, LogOut, User, Settings, CreditCard, HelpCircle } from 'lucide-react'
+import { NotificationsDropdown } from './notifications-dropdown'
 
 interface DashboardHeaderProps {
   profile: Profile
@@ -48,12 +49,12 @@ export function DashboardHeader({ profile }: DashboardHeaderProps) {
 
   return (
     <header className="sticky top-0 z-40 bg-background border-b">
-      <div className="flex items-center gap-4 h-14 px-4">
+      <div className="flex items-center gap-2 md:gap-4 h-14 px-3 md:px-4">
         <SidebarTrigger />
-        <Separator orientation="vertical" className="h-6" />
+        <Separator orientation="vertical" className="h-6 hidden md:block" />
 
-        {/* Search */}
-        <form onSubmit={handleSearch} className="flex-1 max-w-xl">
+        {/* Search - hidden on mobile */}
+        <form onSubmit={handleSearch} className="flex-1 max-w-xl hidden md:block">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -66,13 +67,13 @@ export function DashboardHeader({ profile }: DashboardHeaderProps) {
           </div>
         </form>
 
-        <div className="flex items-center gap-2 ml-auto">
-          {/* New button */}
+        <div className="flex items-center gap-1 md:gap-2 ml-auto">
+          {/* New button - icon only on mobile */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm">
-                <Plus className="h-4 w-4 mr-1" />
-                New
+              <Button size="sm" className="gap-1">
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">New</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
@@ -88,10 +89,7 @@ export function DashboardHeader({ profile }: DashboardHeaderProps) {
           </DropdownMenu>
 
           {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-4 w-4" />
-            <span className="absolute top-1 right-1 h-2 w-2 bg-primary rounded-full" />
-          </Button>
+          <NotificationsDropdown userId={profile.id} />
 
           {/* User menu */}
           <DropdownMenu>
@@ -125,7 +123,7 @@ export function DashboardHeader({ profile }: DashboardHeaderProps) {
                 <CreditCard className="h-4 w-4 mr-2" />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/support')}>
+              <DropdownMenuItem onClick={() => router.push('/dashboard/support')}>
                 <HelpCircle className="h-4 w-4 mr-2" />
                 Support
               </DropdownMenuItem>
