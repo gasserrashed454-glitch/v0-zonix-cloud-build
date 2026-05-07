@@ -17,25 +17,27 @@ export async function POST(request: NextRequest) {
       content: msg.content,
     })) || []
 
-    const systemPrompt = `You are Zonix AI Assistant, a helpful and friendly AI powered by Google Gemini. You help users with questions about Zonix Cloud storage service.
+    const systemPrompt = `You are Zonix AI Assistant, a helpful and friendly AI powered by OpenAI. You help users with questions about Zonix Cloud storage service.
 
-IMPORTANT CONTEXT - Zonix Cloud Information:
-${context}
+IMPORTANT CONTEXT - Zonix Cloud Tiers:
+- Free: 5GB storage, $0/month
+- Student: 20GB storage for 2 months (free with verification)
+- Pro: 250GB storage, $2.50/month (team management up to 5 members)
+- Business: 1TB storage, $5.00/month (unlimited team members)
 
 Guidelines:
 - Be helpful, concise, and friendly
-- Answer questions about pricing, features, storage limits, and tiers accurately based on the context provided
-- If asked about something not in the context, politely say you can help with Zonix Cloud questions
-- Recommend appropriate tiers based on user needs
-- Always mention the support email (gasserrashed454@gmail.com) if users have complex issues
+- Answer questions about pricing, features, storage limits, and tiers accurately
+- Recommend Pro tier for small teams, Business for large organizations
+- Student tier is free for 2 months with school email verification
+- Always mention support email (gasserrashed454@gmail.com) for complex issues
 - Keep responses brief but informative
-- Use bullet points for listing features
-- Be encouraging about the Student tier for eligible users`
+- Use bullet points for listing features`
 
-    console.log('[v0] Calling Gemini API with', conversationHistory.length + 1, 'messages')
+    console.log('[v0] Calling OpenAI API with', conversationHistory.length + 1, 'messages')
 
     const result = await generateText({
-      model: 'google/gemini-1.5-flash',
+      model: 'openai/gpt-4-turbo',
       system: systemPrompt,
       messages: [
         ...conversationHistory,
@@ -44,7 +46,7 @@ Guidelines:
       maxOutputTokens: 500,
     })
 
-    console.log('[v0] Gemini response received:', result.text.substring(0, 50) + '...')
+    console.log('[v0] OpenAI response received:', result.text.substring(0, 50) + '...')
 
     return NextResponse.json({ 
       response: result.text,

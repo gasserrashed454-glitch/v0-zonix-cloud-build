@@ -26,7 +26,8 @@ import {
   Ticket,
   ArrowLeft,
   Globe,
-  Database
+  Database,
+  Server,
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -80,9 +81,9 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
       roles: ['admin']
     },
     { 
-      title: 'Settings', 
-      href: '/admin/settings', 
-      icon: Settings,
+      title: 'Nodes', 
+      href: '/admin/nodes', 
+      icon: Server,
       roles: ['admin']
     },
   ]

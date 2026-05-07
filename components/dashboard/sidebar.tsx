@@ -32,6 +32,7 @@ import {
   GraduationCap,
   Crown,
   Shield,
+  Users,
 } from 'lucide-react'
 
 interface DashboardSidebarProps {
@@ -44,6 +45,7 @@ const mainNav = [
   { title: 'Recent', href: '/dashboard/recent', icon: Clock },
   { title: 'Favorites', href: '/dashboard/favorites', icon: Star },
   { title: 'Shared', href: '/dashboard/shared', icon: Share2 },
+  { title: 'Team', href: '/dashboard/team', icon: Users },
   { title: 'Trash', href: '/dashboard/trash', icon: Trash2 },
 ]
 
