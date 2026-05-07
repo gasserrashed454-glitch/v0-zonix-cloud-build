@@ -8,8 +8,8 @@ const _geist = Geist({ subsets: ['latin'] })
 const _geistMono = Geist_Mono({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Zonix Cloud - Secure Cloud Storage',
-  description: 'Store, share, and collaborate on your files with Zonix Cloud. Featuring AI-powered organization and seamless file management.',
+  title: 'Zonix Cloud - Secure Cloud Storage & Team Management',
+  description: 'Free 5GB cloud storage. Student 20GB (2 months free). Pro 250GB ($2.50/mo). Business 1TB ($5/mo). AI assistant, team collaboration, storage allocation.',
   generator: 'Zonix Cloud',
   keywords: ['cloud storage', 'file sharing', 'AI', 'file management', 'Zonix'],
   authors: [{ name: 'Zonix Cloud' }],
