@@ -237,28 +237,6 @@ export function FileManager({
     }
   }
 
-  const handleDownloadFile = async (file: File) => {
-    try {
-      const response = await fetch(`/api/files/serve?fileId=${file.id}`)
-      if (!response.ok) throw new Error('Download failed')
-      
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = file.name
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
-      
-      toast.success('Download started')
-    } catch (error) {
-      console.error('[v0] Download error:', error)
-      toast.error('Failed to download file')
-    }
-  }
-
   const handleShareFile = async () => {
     if (!selectedFileForShare || !shareEmail.trim()) {
       toast.error('Please enter an email address')
@@ -286,7 +264,7 @@ export function FileManager({
       setShareEmail('')
       setSelectedFileForShare(null)
     } catch (error) {
-      console.error('[v0] Share error:', error)
+      console.error('Share error:', error)
       toast.error('Failed to share file')
     } finally {
       setIsSharing(false)
@@ -467,7 +445,7 @@ export function FileManager({
                     <Share2 className="h-4 w-4 mr-2" />
                     Share
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleDownloadFile(file)}>
+                  <DropdownMenuItem>
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </DropdownMenuItem>
@@ -571,10 +549,10 @@ export function FileManager({
                       <Share2 className="h-4 w-4 mr-2" />
                       Share
                     </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleDownloadFile(file)}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Download className="h-4 w-4 mr-2" />
+                      Download
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="text-destructive"

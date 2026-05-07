@@ -29,12 +29,8 @@ export default function SignUpPage() {
   async function handleGoogleSignUp() {
     setIsGoogleLoading(true)
     try {
-      const result = await signInWithGoogle('signup')
-      if (result?.url) {
-        window.location.href = result.url
-      }
+      await signInWithGoogle('signup')
     } catch (error) {
-      console.error('[v0] Google sign up error:', error)
       toast.error('Failed to sign up with Google')
       setIsGoogleLoading(false)
     }
@@ -202,6 +198,13 @@ export default function SignUpPage() {
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{' '}
               <Link href="/auth/login" className="font-medium text-primary hover:underline">
+                Sign in
+              </Link>
+            </p>
+          </CardFooter>
+            <p className="text-sm text-center text-muted-foreground">
+              Already have an account?{' '}
+              <Link href="/auth/login" className="text-primary hover:underline font-medium">
                 Sign in
               </Link>
             </p>

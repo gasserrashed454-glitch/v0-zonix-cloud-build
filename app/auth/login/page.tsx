@@ -37,12 +37,8 @@ export default function LoginPage() {
   async function handleGoogleSignIn() {
     setIsGoogleLoading(true)
     try {
-      const result = await signInWithGoogle('signin')
-      if (result?.url) {
-        window.location.href = result.url
-      }
+      await signInWithGoogle('signin')
     } catch (error) {
-      console.error('[v0] Google sign in error:', error)
       toast.error('Failed to sign in with Google')
       setIsGoogleLoading(false)
     }
