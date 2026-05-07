@@ -45,6 +45,7 @@ export default function TeamManagementPage() {
         return
       }
 
+      // Fetch team members from database
       const { data, error } = await supabase
         .from('team_members')
         .select('*')
@@ -52,12 +53,24 @@ export default function TeamManagementPage() {
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('[v0] Error loading team members:', error)
+        console.error('Error loading team members:', error)
         toast.error('Failed to load team members')
         return
       }
 
-      setTeamMembers(data || [])
+      // Fetch actual used storage for each team member
+      const membersWithStorage = await Promise.all((data || []).map(async (member) => {
+        const { data: filesData } = await supabase
+          .from('files')
+          .select('size')
+          .eq('user_id', member.id)
+          .eq('is_trashed', false)
+        
+        const usedStorage = filesData?.reduce((sum, f) => sum + (f.size || 0), 0) || 0
+        return { ...member, used_storage: usedStorage }
+      }))
+
+      setTeamMembers(membersWithStorage)
     } catch (error) {
       console.error('[v0] Error:', error)
       toast.error('Failed to load team members')

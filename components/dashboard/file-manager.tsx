@@ -80,6 +80,10 @@ export function FileManager({
   const [showNewFolderDialog, setShowNewFolderDialog] = useState(false)
   const [newFolderName, setNewFolderName] = useState('')
   const [isCreatingFolder, setIsCreatingFolder] = useState(false)
+  const [shareDialogOpen, setShareDialogOpen] = useState(false)
+  const [selectedFileForShare, setSelectedFileForShare] = useState<File | null>(null)
+  const [shareEmail, setShareEmail] = useState('')
+  const [isSharing, setIsSharing] = useState(false)
 
   const supabase = createClient()
 
@@ -230,6 +234,40 @@ export function FileManager({
       toast.success('Moved to trash')
     } catch {
       toast.error('Failed to move to trash')
+    }
+  }
+
+  const handleShareFile = async () => {
+    if (!selectedFileForShare || !shareEmail.trim()) {
+      toast.error('Please enter an email address')
+      return
+    }
+
+    setIsSharing(true)
+    try {
+      const response = await fetch('/api/files/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileId: selectedFileForShare.id,
+          shareWithEmail: shareEmail,
+          permission: 'view'
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to share file')
+      }
+
+      toast.success(`File shared with ${shareEmail}`)
+      setShareDialogOpen(false)
+      setShareEmail('')
+      setSelectedFileForShare(null)
+    } catch (error) {
+      console.error('Share error:', error)
+      toast.error('Failed to share file')
+    } finally {
+      setIsSharing(false)
     }
   }
 
@@ -398,7 +436,12 @@ export function FileManager({
                     <Star className={`h-4 w-4 mr-2 ${file.is_favorite ? 'fill-amber-400 text-amber-400' : ''}`} />
                     {file.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => {
+                      setSelectedFileForShare(file)
+                      setShareDialogOpen(true)
+                    }}
+                  >
                     <Share2 className="h-4 w-4 mr-2" />
                     Share
                   </DropdownMenuItem>
@@ -571,6 +614,51 @@ export function FileManager({
             <Button onClick={handleCreateFolder} disabled={isCreatingFolder || !newFolderName.trim()}>
               {isCreatingFolder ? <Spinner className="mr-2" /> : null}
               Create folder
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Share Dialog */}
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share File</DialogTitle>
+            <DialogDescription>
+              {selectedFileForShare && `Share "${selectedFileForShare.name}" with someone`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="share-email">Email address</Label>
+              <Input
+                id="share-email"
+                type="email"
+                placeholder="user@example.com"
+                value={shareEmail}
+                onChange={(e) => setShareEmail(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleShareFile()
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShareDialogOpen(false)
+                setShareEmail('')
+                setSelectedFileForShare(null)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleShareFile} disabled={isSharing || !shareEmail.trim()}>
+              {isSharing ? <Spinner className="mr-2" /> : null}
+              Share
             </Button>
           </DialogFooter>
         </DialogContent>

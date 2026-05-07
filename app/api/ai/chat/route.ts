@@ -11,38 +11,34 @@ export async function POST(req: Request) {
       return new Response('Unauthorized', { status: 401 })
     }
 
-    // Check AI usage limits based on tier
-    if (profile.tier === 'student') {
-      // Student gets 200 uses/day
-      if (profile.ai_uses_today >= 200) {
-        return new Response(JSON.stringify({ 
-          error: 'Daily student AI limit (200) reached. Try again tomorrow.' 
-        }), { 
-          status: 429,
-          headers: { 'Content-Type': 'application/json' }
-        })
-      }
-    } else if (profile.tier === 'free') {
-      // Free gets 50 uses/day
-      if (profile.ai_uses_today >= 50) {
-        return new Response(JSON.stringify({ 
-          error: 'Daily AI limit (50) reached. Upgrade to Student or Premium for more usage.' 
-        }), { 
-          status: 429,
-          headers: { 'Content-Type': 'application/json' }
-        })
-      }
-    }
-    // Premium and Enterprise have unlimited
+    // Fetch user profile first
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
 
-    if (profile.ai_uses_today >= profile.ai_daily_limit) {
+    if (profileError || !profile) {
+      return new Response(JSON.stringify({ error: 'Profile not found' }), { status: 401 })
+    }
+
+    // Check AI usage limits based on tier
+    if (profile.tier === 'student' && profile.ai_uses_today >= 200) {
       return new Response(JSON.stringify({ 
-        error: 'Daily AI limit reached. Upgrade to Premium for unlimited usage.' 
+        error: 'Daily student AI limit (200) reached. Try again tomorrow.' 
+      }), { 
+        status: 429,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    } else if (profile.tier === 'free' && profile.ai_uses_today >= 50) {
+      return new Response(JSON.stringify({ 
+        error: 'Daily AI limit (50) reached. Upgrade to Student or Premium for more usage.' 
       }), { 
         status: 429,
         headers: { 'Content-Type': 'application/json' }
       })
     }
+    // Premium and Enterprise have unlimited
 
     const { messages, context } = await req.json()
 
