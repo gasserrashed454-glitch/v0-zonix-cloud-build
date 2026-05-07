@@ -11,16 +11,29 @@ export async function POST(req: Request) {
       return new Response('Unauthorized', { status: 401 })
     }
 
-    // Check AI usage limits
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('ai_uses_today, ai_daily_limit, tier')
-      .eq('id', user.id)
-      .single()
-
-    if (!profile) {
-      return new Response('Profile not found', { status: 404 })
+    // Check AI usage limits based on tier
+    if (profile.tier === 'student') {
+      // Student gets 200 uses/day
+      if (profile.ai_uses_today >= 200) {
+        return new Response(JSON.stringify({ 
+          error: 'Daily student AI limit (200) reached. Try again tomorrow.' 
+        }), { 
+          status: 429,
+          headers: { 'Content-Type': 'application/json' }
+        })
+      }
+    } else if (profile.tier === 'free') {
+      // Free gets 50 uses/day
+      if (profile.ai_uses_today >= 50) {
+        return new Response(JSON.stringify({ 
+          error: 'Daily AI limit (50) reached. Upgrade to Student or Premium for more usage.' 
+        }), { 
+          status: 429,
+          headers: { 'Content-Type': 'application/json' }
+        })
+      }
     }
+    // Premium and Enterprise have unlimited
 
     if (profile.ai_uses_today >= profile.ai_daily_limit) {
       return new Response(JSON.stringify({ 
@@ -141,19 +154,20 @@ export async function POST(req: Request) {
       })
     }
 
-    const systemPrompt = `You are Zonix AI, a helpful assistant for Zonix Cloud file storage service. 
+    const systemPrompt = `You are Zonix AI, a helpful assistant for Zonix Cloud file storage service powered by Groq (free & fast). 
 You help users manage their files, search for documents, and provide insights about their storage.
 
 User context:
 - Tier: ${profile.tier}
 - Storage Used: ${formatBytes(profile.storage_used || 0)} / ${formatBytes(profile.storage_limit || 0)}
+- AI Daily Limit: ${profile.tier === 'student' ? '200' : profile.tier === 'free' ? '50' : 'Unlimited'} uses
 ${context ? `\nAdditional context: ${JSON.stringify(context)}` : ''}
 
-Be concise, helpful, and friendly. When users ask about files, use the available tools to search and provide accurate information.
-If users hit their AI usage limit, kindly suggest upgrading to Premium for unlimited access.`
+You are powered by Groq's fast, open-source AI models - completely free with no usage limits for Premium tier.
+Be concise, helpful, and friendly. When users ask about files, use the available tools to search and provide accurate information.`
 
     const result = streamText({
-      model: 'openai/gpt-4o-mini',
+      model: 'groq/mixtral-8x7b-32768',
       system: systemPrompt,
       messages: await convertToModelMessages(messages),
       tools,

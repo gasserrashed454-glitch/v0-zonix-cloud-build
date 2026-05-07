@@ -1,4 +1,4 @@
-export type UserTier = 'free' | 'student' | 'pro' | 'business' | 'enterprise'
+export type UserTier = 'free' | 'student' | 'premium' | 'business' | 'enterprise'
 export type UserRole = 'user' | 'support' | 'mod' | 'admin'
 export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed'
 
@@ -154,22 +154,22 @@ export const TIER_CONFIG: Record<UserTier, {
     price: 0,
     storage_limit: 20 * 1024 * 1024 * 1024, // 20 GB
     upload_limit: 10 * 1024 * 1024 * 1024, // 10 GB
-    ai_daily_limit: 500,
+    ai_daily_limit: 200,
     duration: '2 months',
     features: [
       '20 GB storage for 2 months',
       '10 GB upload limit',
-      'Unlimited AI Assistant',
+      'AI Assistant (200 uses/day)',
       'AI File Organization',
       'Priority support',
     ],
   },
-  pro: {
-    name: 'Pro',
+  premium: {
+    name: 'Premium',
     price: 3,
     storage_limit: 250 * 1024 * 1024 * 1024, // 250 GB
     upload_limit: 25 * 1024 * 1024 * 1024, // 25 GB
-    ai_daily_limit: 500,
+    ai_daily_limit: 200,
     features: [
       '250 GB storage',
       '25 GB upload limit',

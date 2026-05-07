@@ -84,9 +84,33 @@ export default function TermsPage() {
                 </p>
               </section>
 
-              {/* Section 2 */}
-              <section id="section-2" className="scroll-mt-32">
-                <h2 className="text-2xl font-bold mb-4">2. Description of Service</h2>
+              {/* Section 2 - IMPORTANT */}
+              <section id="section-2" className="scroll-mt-32 border-l-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-950 p-6 rounded-r-lg">
+                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <span className="text-2xl">⚠️</span> 2. User Data and Backup Responsibility
+                </h2>
+                <p className="text-foreground font-semibold mb-4">
+                  CRITICAL: Users are entirely responsible for maintaining backup copies of their data.
+                </p>
+                <ul className="space-y-3 ml-4">
+                  {[
+                    'Data Loss Risk: While Zonix Cloud employs industry-standard security measures, we do not guarantee against data loss due to file corruption, accidental deletion, hacking, or other events beyond our reasonable control.',
+                    'No Liability: Zonix Cloud is not responsible for any data loss, corruption, or unavailability of files. Users must maintain independent backups of critical files.',
+                    'Service Availability: We strive for 99% uptime, but cannot guarantee continuous service availability. Users should not rely solely on Zonix Cloud for data persistence.',
+                    'Automatic Deletion: Files in the Trash folder are automatically deleted after 30 days. Zonix Cloud assumes no responsibility for permanently lost files.',
+                    'Account Termination: If your account is terminated due to policy violations, all associated data will be permanently deleted with no recovery option.',
+                  ].map((item, i) => (
+                    <li key={i} className="flex gap-3 text-foreground">
+                      <span className="text-yellow-600 dark:text-yellow-400 font-bold">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              {/* Section 3 */}
+              <section id="section-3" className="scroll-mt-32">
+                <h2 className="text-2xl font-bold mb-4">3. Description of Service</h2>
                 <p className="text-muted-foreground leading-relaxed">
                   Zonix Cloud provides cloud storage services that allow you to store, access, and share files 
                   online. Our services include file storage, file sharing, collaboration features, and AI-powered 
@@ -94,9 +118,9 @@ export default function TermsPage() {
                 </p>
               </section>
 
-              {/* Section 3 */}
-              <section id="section-3" className="scroll-mt-32">
-                <h2 className="text-2xl font-bold mb-4">3. User Accounts</h2>
+              {/* Section 4 */}
+              <section id="section-4" className="scroll-mt-32">
+                <h2 className="text-2xl font-bold mb-4">4. User Accounts</h2>
                 <p className="text-muted-foreground leading-relaxed mb-4">
                   You must create an account to use Zonix Cloud. You are responsible for maintaining the 
                   confidentiality of your account credentials and for all activities that occur under your 
@@ -105,9 +129,9 @@ export default function TermsPage() {
                 </p>
               </section>
 
-              {/* Section 4 */}
-              <section id="section-4" className="scroll-mt-32">
-                <h2 className="text-2xl font-bold mb-4">4. Acceptable Use</h2>
+              {/* Section 5 */}
+              <section id="section-5" className="scroll-mt-32">
+                <h2 className="text-2xl font-bold mb-4">5. Acceptable Use</h2>
                 <p className="text-muted-foreground leading-relaxed mb-4">
                   You agree not to use Zonix Cloud to:
                 </p>
@@ -126,6 +150,17 @@ export default function TermsPage() {
                     </li>
                   ))}
                 </ul>
+              </section>
+
+              {/* Section 6 */}
+              <section id="section-6" className="scroll-mt-32">
+                <h2 className="text-2xl font-bold mb-4">6. Malware Scanning</h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  Zonix Cloud may scan uploaded files for malware and malicious content. Users can enable or disable 
+                  this feature in their storage settings. We do not guarantee complete protection against all threats. 
+                  File scanning may result in temporary delays during upload. Any files detected as malicious may be 
+                  quarantined or deleted without prior notice.
+                </p>
               </section>
 
               {/* Section 5 */}

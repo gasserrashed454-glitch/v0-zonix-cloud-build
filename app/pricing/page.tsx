@@ -47,7 +47,7 @@ const tiers = [
     badge: 'Students',
   },
   {
-    name: 'Pro',
+    name: 'Premium',
     price: '$3',
     period: '/month',
     description: 'Perfect for growing teams',
@@ -55,14 +55,14 @@ const tiers = [
     features: [
       '250 GB storage',
       '25 GB upload limit per file',
-      'Unlimited AI Assistant',
+      'AI Assistant (200 uses/day)',
       'Team management (up to 5 members)',
       'Storage allocation for team members',
       'Advanced sharing controls',
       'Priority support',
     ],
-    cta: 'Upgrade to Pro',
-    href: '/pricing?checkout=pro',
+    cta: 'Upgrade to Premium',
+    href: '/pricing?checkout=premium',
     popular: false,
   },
   {
