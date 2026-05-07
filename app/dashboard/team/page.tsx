@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Users, Plus, Trash2, Edit2, Share2, AlertCircle } from 'lucide-react'
+import { Users, Plus, Trash2, Edit2, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -30,7 +30,6 @@ export default function TeamManagementPage() {
   const [isAdding, setIsAdding] = useState(false)
   const supabase = createClient()
 
-  // Load team members on mount and set up real-time subscription
   useEffect(() => {
     loadTeamMembers()
     subscribeToChanges()
@@ -46,7 +45,6 @@ export default function TeamManagementPage() {
         return
       }
 
-      // Fetch team members from database
       const { data, error } = await supabase
         .from('team_members')
         .select('*')
@@ -54,14 +52,14 @@ export default function TeamManagementPage() {
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('Error loading team members:', error)
+        console.error('[v0] Error loading team members:', error)
         toast.error('Failed to load team members')
         return
       }
 
       setTeamMembers(data || [])
     } catch (error) {
-      console.error('Error:', error)
+      console.error('[v0] Error:', error)
       toast.error('Failed to load team members')
     } finally {
       setIsLoading(false)
@@ -114,7 +112,6 @@ export default function TeamManagementPage() {
         return
       }
 
-      // Add team member to database
       const { error } = await supabase
         .from('team_members')
         .insert({
@@ -126,7 +123,7 @@ export default function TeamManagementPage() {
         })
 
       if (error) {
-        console.error('Error adding member:', error)
+        console.error('[v0] Error adding member:', error)
         toast.error(error.message)
         return
       }
@@ -137,7 +134,7 @@ export default function TeamManagementPage() {
       setShowAddMember(false)
       await loadTeamMembers()
     } catch (error) {
-      console.error('Error:', error)
+      console.error('[v0] Error:', error)
       toast.error('Failed to add team member')
     } finally {
       setIsAdding(false)
@@ -159,7 +156,7 @@ export default function TeamManagementPage() {
       toast.success('Member removed')
       await loadTeamMembers()
     } catch (error) {
-      console.error('Error:', error)
+      console.error('[v0] Error:', error)
       toast.error('Failed to remove member')
     }
   }
@@ -188,7 +185,7 @@ export default function TeamManagementPage() {
       toast.success('Storage allocation updated')
       await loadTeamMembers()
     } catch (error) {
-      console.error('Error:', error)
+      console.error('[v0] Error:', error)
       toast.error('Failed to update allocation')
     }
   }
@@ -351,131 +348,6 @@ export default function TeamManagementPage() {
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
-}
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Share2 className="h-5 w-5" />
-              Storage Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground">Total Storage</p>
-                <p className="text-2xl font-bold">{totalStorage}GB</p>
-              </div>
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground">Allocated</p>
-                <p className="text-2xl font-bold">{allocatedStorage}GB</p>
-              </div>
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground">Available</p>
-                <p className="text-2xl font-bold text-green-600">{availableStorage}GB</p>
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <div 
-                className="bg-blue-600 h-3 rounded-full transition-all" 
-                style={{ width: `${(allocatedStorage / totalStorage) * 100}%` }}
-              ></div>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {((allocatedStorage / totalStorage) * 100).toFixed(1)}% of storage allocated
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Team Members */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Team Members
-              </CardTitle>
-              <CardDescription>Manage who has access and their storage</CardDescription>
-            </div>
-            <Button onClick={() => setShowAddMember(!showAddMember)} size="sm" className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Member
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Add Member Form */}
-            {showAddMember && (
-              <div className="p-4 border rounded-lg space-y-3">
-                <Input
-                  placeholder="team@example.com"
-                  value={newMemberEmail}
-                  onChange={(e) => setNewMemberEmail(e.target.value)}
-                />
-                <div className="flex gap-2">
-                  <Input
-                    type="number"
-                    placeholder="Storage (GB)"
-                    value={newMemberStorage}
-                    onChange={(e) => setNewMemberStorage(e.target.value)}
-                    max={availableStorage}
-                  />
-                  <Button onClick={handleAddMember}>Add</Button>
-                  <Button variant="outline" onClick={() => setShowAddMember(false)}>Cancel</Button>
-                </div>
-              </div>
-            )}
-
-            {/* Members List */}
-            <div className="space-y-2">
-              {teamMembers.map(member => (
-                <div key={member.id} className="p-4 border rounded-lg flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="font-medium">{member.name}</p>
-                    <p className="text-sm text-muted-foreground">{member.email}</p>
-                    <div className="mt-2 flex items-center gap-2">
-                      <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-xs">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full" 
-                          style={{ width: `${(member.usedStorage / member.allocatedStorage) * 100}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm text-muted-foreground whitespace-nowrap">
-                        {member.usedStorage}GB / {member.allocatedStorage}GB
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <Badge variant={member.role === 'Owner' ? 'default' : 'outline'}>
-                      {member.role}
-                    </Badge>
-                    {member.role !== 'Owner' && (
-                      <>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => {
-                            const newAlloc = prompt(`New allocation (GB):`, member.allocatedStorage.toString())
-                            if (newAlloc) handleUpdateStorage(member.id, parseInt(newAlloc))
-                          }}
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleDeleteMember(member.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
           </CardContent>
         </Card>
       </div>

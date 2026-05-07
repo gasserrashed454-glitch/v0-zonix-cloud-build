@@ -6,7 +6,7 @@ import { ZonixLogo } from '@/components/zonix-logo'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Check, Cloud, Sparkles, Building2, GraduationCap, ArrowRight } from 'lucide-react'
+import { Check, Cloud, Sparkles, Building2, GraduationCap, ArrowRight, Shield } from 'lucide-react'
 
 const tiers = [
   {
