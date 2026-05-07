@@ -95,11 +95,11 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                     asChild
                     isActive={pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))}
                     tooltip={item.title}
-                    className="whitespace-nowrap overflow-hidden"
+                    className="h-10 px-3 text-ellipsis whitespace-nowrap overflow-hidden"
                   >
-                    <Link href={item.href}>
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      <span className="truncate">{item.title}</span>
+                    <Link href={item.href} className="flex items-center gap-3 min-w-0">
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="hidden lg:inline truncate text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -120,11 +120,11 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                     asChild
                     isActive={pathname === item.href}
                     tooltip={item.title}
-                    className="whitespace-nowrap overflow-hidden"
+                    className="h-10 px-3 text-ellipsis whitespace-nowrap overflow-hidden"
                   >
-                    <Link href={item.href}>
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      <span className="truncate">{item.title}</span>
+                    <Link href={item.href} className="flex items-center gap-3 min-w-0">
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="hidden lg:inline truncate text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -178,11 +178,11 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                     asChild
                     isActive={pathname === item.href}
                     tooltip={item.title}
-                    className="whitespace-nowrap overflow-hidden"
+                    className="h-10 px-3 text-ellipsis whitespace-nowrap overflow-hidden"
                   >
-                    <Link href={item.href}>
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      <span className="truncate">{item.title}</span>
+                    <Link href={item.href} className="flex items-center gap-3 min-w-0">
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="hidden lg:inline truncate text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
