@@ -220,12 +220,12 @@ export async function signInWithGoogle(type: 'signin' | 'signup') {
   })
 
   if (error) {
-    return { error: error.message }
+    throw new Error(error.message)
   }
 
   if (data.url) {
-    redirect(data.url)
+    return { url: data.url }
   }
 
-  return { success: true }
+  throw new Error('No OAuth URL returned')
 }

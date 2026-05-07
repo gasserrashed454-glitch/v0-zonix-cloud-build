@@ -211,33 +211,78 @@ export function FileManager({
     setSelectedItems(newSelected)
   }
 
-  const handleToggleFavorite = async (fileId: string, isFavorite: boolean) => {
+  const handleToggleFavorite = async (fileId: string, isFavorite: boolean, e?: React.MouseEvent) => {
+    e?.preventDefault()
+    e?.stopPropagation()
+    
     try {
-      await supabase
+      const { error } = await supabase
         .from('files')
         .update({ is_favorite: !isFavorite })
         .eq('id', fileId)
+      
+      if (error) throw error
+      
       mutateFiles()
       toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites')
-    } catch {
+    } catch (error) {
+      console.error('[v0] Favorite error:', error)
       toast.error('Failed to update favorite status')
     }
   }
 
-  const handleMoveToTrash = async (fileId: string) => {
+  const handleMoveToTrash = async (fileId: string, e?: React.MouseEvent) => {
+    e?.preventDefault()
+    e?.stopPropagation()
+    
     try {
-      await supabase
+      const { error } = await supabase
         .from('files')
         .update({ is_trashed: true, trashed_at: new Date().toISOString() })
         .eq('id', fileId)
+      
+      if (error) throw error
+      
       mutateFiles()
       toast.success('Moved to trash')
-    } catch {
+    } catch (error) {
+      console.error('[v0] Trash error:', error)
       toast.error('Failed to move to trash')
     }
   }
 
-  const handleShareFile = async () => {
+  const handleDownloadFile = async (file: File, e?: React.MouseEvent) => {
+    e?.preventDefault()
+    e?.stopPropagation()
+    
+    try {
+      const response = await fetch(`/api/files/serve?pathname=${encodeURIComponent(file.blob_pathname || '')}`)
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Download failed')
+      }
+      
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = file.name
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      
+      toast.success('Download started')
+    } catch (error) {
+      console.error('[v0] Download error:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to download file')
+    }
+  }
+
+  const handleShareFile = async (e?: React.MouseEvent) => {
+    e?.preventDefault()
+    e?.stopPropagation()
+    
     if (!selectedFileForShare || !shareEmail.trim()) {
       toast.error('Please enter an email address')
       return
@@ -249,14 +294,15 @@ export function FileManager({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fileId: selectedFileForShare.id,
-          shareWithEmail: shareEmail,
+          file_id: selectedFileForShare.id,
+          shared_with_email: shareEmail,
           permission: 'view'
         })
       })
 
       if (!response.ok) {
-        throw new Error('Failed to share file')
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to share file')
       }
 
       toast.success(`File shared with ${shareEmail}`)
@@ -264,8 +310,8 @@ export function FileManager({
       setShareEmail('')
       setSelectedFileForShare(null)
     } catch (error) {
-      console.error('Share error:', error)
-      toast.error('Failed to share file')
+      console.error('[v0] Share error:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to share file')
     } finally {
       setIsSharing(false)
     }
@@ -431,8 +477,12 @@ export function FileManager({
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => handleToggleFavorite(file.id, file.is_favorite)}>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem 
+                    onClick={(e) => {
+                      handleToggleFavorite(file.id, file.is_favorite, e as any)
+                    }}
+                  >
                     <Star className={`h-4 w-4 mr-2 ${file.is_favorite ? 'fill-amber-400 text-amber-400' : ''}`} />
                     {file.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
                   </DropdownMenuItem>
@@ -445,14 +495,14 @@ export function FileManager({
                     <Share2 className="h-4 w-4 mr-2" />
                     Share
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={(e) => handleDownloadFile(file, e as any)}>
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="text-destructive"
-                    onClick={() => handleMoveToTrash(file.id)}
+                    onClick={(e) => handleMoveToTrash(file.id, e as any)}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Move to trash
@@ -540,28 +590,33 @@ export function FileManager({
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleToggleFavorite(file.id, file.is_favorite)}>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={(e) => handleToggleFavorite(file.id, file.is_favorite, e as any)}>
                       <Star className={`h-4 w-4 mr-2 ${file.is_favorite ? 'fill-amber-400 text-amber-400' : ''}`} />
                       {file.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        setSelectedFileForShare(file)
+                        setShareDialogOpen(true)
+                      }}
+                    >
                       <Share2 className="h-4 w-4 mr-2" />
                       Share
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={(e) => handleDownloadFile(file, e as any)}>
                       <Download className="h-4 w-4 mr-2" />
                       Download
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="text-destructive"
-                      onClick={() => handleMoveToTrash(file.id)}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Move to trash
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
+                      onClick={(e) => handleMoveToTrash(file.id, e as any)}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Move to trash
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
                 </DropdownMenu>
               </div>
             </div>
