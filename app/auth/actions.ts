@@ -53,7 +53,7 @@ export async function sendVerificationCode(email: string, type: 'signup' | 'stud
             <p style="color: #999; font-size: 14px; margin-top: 20px;">This code expires in 10 minutes</p>
           </div>
           <p style="color: #999; font-size: 12px; text-align: center; margin-top: 30px;">
-            Need help? Contact support at gasserrashed454@gmail.com
+            Need help? Contact support at support@zonix.me
           </p>
         </div>
       `,
@@ -200,6 +200,31 @@ export async function resetPassword(password: string) {
 
   if (error) {
     return { success: false, error: error.message }
+  }
+
+  return { success: true }
+}
+
+export async function signInWithGoogle(type: 'signin' | 'signup') {
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: getRedirectUrl('/auth/callback'),
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      },
+    },
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  if (data.url) {
+    redirect(data.url)
   }
 
   return { success: true }

@@ -9,12 +9,13 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
-import { signIn } from '../actions'
-import { Mail, Lock, ArrowRight } from 'lucide-react'
+import { signIn, signInWithGoogle } from '../actions'
+import { Mail, Lock, ArrowRight, Chrome } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -31,6 +32,16 @@ export default function LoginPage() {
     }
     
     setIsLoading(false)
+  }
+
+  async function handleGoogleSignIn() {
+    setIsGoogleLoading(true)
+    try {
+      await signInWithGoogle('signin')
+    } catch (error) {
+      toast.error('Failed to sign in with Google')
+      setIsGoogleLoading(false)
+    }
   }
 
   return (
@@ -91,6 +102,33 @@ export default function LoginPage() {
               <>
                 Sign in
                 <ArrowRight className="ml-2 h-4 w-4" />
+              </>
+            )}
+          </Button>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-muted"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Or</span>
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogleSignIn}
+            disabled={isGoogleLoading}
+          >
+            {isGoogleLoading ? (
+              <>
+                <Spinner className="mr-2 h-4 w-4" />
+                Signing in...
+              </>
+            ) : (
+              <>
+                <Chrome className="mr-2 h-4 w-4" />
+                Sign in with Google
               </>
             )}
           </Button>
