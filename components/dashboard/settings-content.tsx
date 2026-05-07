@@ -19,9 +19,8 @@ import {
   Key,
   Mail
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import type { User } from '@supabase/supabase-js'
-import type { Profile } from '@/lib/types'
+import { ChangePasswordForm } from './change-password-form'
+import { TwoFactorAuthSettings } from './two-factor-settings'
 
 interface SettingsContentProps {
   user: User
@@ -186,6 +185,12 @@ export function SettingsContent({ user, profile }: SettingsContentProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Password & Security Settings */}
+      <ChangePasswordForm />
+
+      {/* Two-Factor Authentication */}
+      <TwoFactorAuthSettings />
 
       {/* Danger Zone */}
       <Card className="border-destructive/50">
