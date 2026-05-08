@@ -1,0 +1,20 @@
+name = "zonix-cloud"
+main = "./.output/server/index.js"
+compatibility_date = "2024-12-18"
+compatibility_flags = ["nodejs_compat"]
+
+[env.production]
+name = "zonix-cloud-prod"
+route = "zonix.me/*"
+zone_id = "YOUR_ZONE_ID"
+
+[build]
+command = "npm run build"
+cwd = "."
+
+[build.upload]
+format = "service-worker"
+
+[[env.production.routes]]
+pattern = "zonix.me/*"
+zone_name = "zonix.me"

@@ -1,0 +1,25 @@
+{
+  "compatibility_date": "2024-12-18",
+  "compatibility_flags": ["nodejs_compat"],
+  "name": "zonix-cloud",
+  "main": "server.js",
+  "build": {
+    "command": "pnpm run build",
+    "cwd": "/",
+    "watch_paths": ["app/**/*", "components/**/*", "lib/**/*", "public/**/*"],
+    "environment": {
+      "NODE_VERSION": "20",
+      "NPM_FLAGS": "--legacy-peer-deps"
+    }
+  },
+  "env": {
+    "production": {
+      "routes": [
+        {
+          "pattern": "zonix.me/*",
+          "zone_name": "zonix.me"
+        }
+      ]
+    }
+  }
+}
