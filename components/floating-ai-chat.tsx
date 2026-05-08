@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
+import { SUPPORT_EMAIL } from '@/lib/config'
 import { 
   MessageCircle, 
   X, 
@@ -27,7 +28,7 @@ interface Message {
 }
 
 // Tier information that the AI knows about
-const TIER_INFO = `
+const getTierInfo = (supportEmail: string) => `
 Zonix Cloud Pricing Tiers:
 
 1. FREE TIER ($0/month):
@@ -71,7 +72,7 @@ Features across all tiers:
 - Real-time collaboration
 - Version history (Pro and above)
 
-Support Contact: gasserrashed454@gmail.com
+Support Contact: ${supportEmail}
 `
 
 export function FloatingAIChat() {
@@ -122,7 +123,7 @@ export function FloatingAIChat() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage.content,
-          context: TIER_INFO,
+          context: getTierInfo(SUPPORT_EMAIL),
           history: messages.slice(-10).map(m => ({
             role: m.role,
             content: m.content
@@ -151,7 +152,7 @@ export function FloatingAIChat() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'I\'m having trouble connecting right now. Please try again in a moment or contact support at gasserrashed454@gmail.com',
+        content: `I'm having trouble connecting right now. Please try again in a moment or contact support at ${SUPPORT_EMAIL}`,
         createdAt: new Date()
       }
       setMessages(prev => [...prev, errorMessage])

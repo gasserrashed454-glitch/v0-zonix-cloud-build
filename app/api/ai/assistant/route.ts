@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateText } from 'ai'
 import { groq } from '@ai-sdk/groq'
+import { SUPPORT_EMAIL } from '@/lib/config'
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,7 +59,7 @@ GUIDELINES:
 - Answer pricing and feature questions accurately
 - Recommend Pro for small teams, Business for large teams
 - Student tier is free for 2 months with school email verification
-- Always mention support at gasserrashed454@gmail.com for complex issues
+- Always mention support at ${SUPPORT_EMAIL} for complex issues
 - Use bullet points for features
 - Keep responses under 150 words`
 
@@ -85,7 +86,7 @@ GUIDELINES:
     return NextResponse.json(
       { 
         error: 'AI service temporarily unavailable',
-        response: 'Sorry, our AI assistant is temporarily unavailable. Please contact support@zonix.cloud or try again in a moment.'
+        response: `Sorry, our AI assistant is temporarily unavailable. Please contact ${SUPPORT_EMAIL} or try again in a moment.`
       },
       { status: 500 }
     )

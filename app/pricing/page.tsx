@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Check, Cloud, Sparkles, Building2, GraduationCap, ArrowRight, Shield } from 'lucide-react'
+import { SUPPORT_EMAIL } from '@/lib/config'
 
 const tiers = [
   {
@@ -102,7 +103,7 @@ const tiers = [
       'Purchase storage from team accounts',
     ],
     cta: 'Contact Sales',
-    href: 'mailto:gasserrashed454@gmail.com?subject=Enterprise%20Plan%20Inquiry',
+    href: `mailto:${SUPPORT_EMAIL}?subject=Enterprise%20Plan%20Inquiry`,
     popular: false,
   },
 ]

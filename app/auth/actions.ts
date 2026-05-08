@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Resend } from 'resend'
+import { SUPPORT_EMAIL } from '@/lib/config'
 
 function generateCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString()
@@ -53,7 +54,7 @@ export async function sendVerificationCode(email: string, type: 'signup' | 'stud
             <p style="color: #999; font-size: 14px; margin-top: 20px;">This code expires in 10 minutes</p>
           </div>
           <p style="color: #999; font-size: 12px; text-align: center; margin-top: 30px;">
-            Need help? Contact support at support@zonix.me
+            Need help? Contact support at ${SUPPORT_EMAIL}
           </p>
         </div>
       `,
