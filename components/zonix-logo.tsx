@@ -49,7 +49,7 @@ export function ZonixLogo({ className, showText = true, size = 'md' }: ZonixLogo
         </defs>
       </svg>
       {showText && (
-        <span className={cn('font-semibold tracking-tight text-foreground', text)}>
+        <span className={cn('font-semibold text-foreground', text)}>
           Zonix<span className="text-primary">Cloud</span>
         </span>
       )}

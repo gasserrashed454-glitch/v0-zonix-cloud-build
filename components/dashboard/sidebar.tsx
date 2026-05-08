@@ -32,6 +32,7 @@ import {
   GraduationCap,
   Crown,
   Shield,
+  Users,
 } from 'lucide-react'
 
 interface DashboardSidebarProps {
@@ -44,6 +45,7 @@ const mainNav = [
   { title: 'Recent', href: '/dashboard/recent', icon: Clock },
   { title: 'Favorites', href: '/dashboard/favorites', icon: Star },
   { title: 'Shared', href: '/dashboard/shared', icon: Share2 },
+  { title: 'Team', href: '/dashboard/team', icon: Users },
   { title: 'Trash', href: '/dashboard/trash', icon: Trash2 },
 ]
 
@@ -52,7 +54,7 @@ const aiNav = [
 ]
 
 const bottomNav = [
-  { title: 'Support', href: '/support', icon: HelpCircle },
+  { title: 'Support', href: '/dashboard/support', icon: HelpCircle },
   { title: 'Settings', href: '/dashboard/settings', icon: Settings },
 ]
 
@@ -76,7 +78,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
   const TierIcon = tierIcons[profile.tier]
 
   return (
-    <Sidebar className="border-r">
+    <Sidebar className="border-r" collapsible="icon">
       <SidebarHeader className="p-4">
         <Link href="/dashboard">
           <ZonixLogo size="md" />
@@ -92,10 +94,12 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))}
+                    tooltip={item.title}
+                    className="h-10 px-3 text-ellipsis whitespace-nowrap overflow-hidden"
                   >
-                    <Link href={item.href}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                    <Link href={item.href} className="flex items-center gap-3 min-w-0">
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="hidden lg:inline truncate text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -115,10 +119,12 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === item.href}
+                    tooltip={item.title}
+                    className="h-10 px-3 text-ellipsis whitespace-nowrap overflow-hidden"
                   >
-                    <Link href={item.href}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                    <Link href={item.href} className="flex items-center gap-3 min-w-0">
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="hidden lg:inline truncate text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -137,7 +143,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                 <SidebarMenu>
                   {profile.role === 'admin' && (
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')}>
+                      <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')} tooltip="Admin Panel">
                         <Link href="/admin">
                           <Shield className="h-4 w-4" />
                           <span>Admin Panel</span>
@@ -147,7 +153,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                   )}
                   {(profile.role === 'admin' || profile.role === 'mod' || profile.role === 'support') && (
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={pathname.startsWith('/support-panel')}>
+                      <SidebarMenuButton asChild isActive={pathname.startsWith('/support-panel')} tooltip="Support Panel">
                         <Link href="/support-panel">
                           <HelpCircle className="h-4 w-4" />
                           <span>Support Panel</span>
@@ -171,10 +177,12 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === item.href}
+                    tooltip={item.title}
+                    className="h-10 px-3 text-ellipsis whitespace-nowrap overflow-hidden"
                   >
-                    <Link href={item.href}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                    <Link href={item.href} className="flex items-center gap-3 min-w-0">
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="hidden lg:inline truncate text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -208,6 +216,17 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
             </Link>
           )}
         </div>
+        
+        {/* Student verification for free users */}
+        {profile.tier === 'free' && !profile.student_verified && (
+          <Link 
+            href="/dashboard/student-verify" 
+            className="flex items-center gap-2 p-2 rounded-lg bg-green-50 border border-green-200 hover:bg-green-100 transition-colors"
+          >
+            <GraduationCap className="h-4 w-4 text-green-600" />
+            <span className="text-xs font-medium text-green-700">Are you a student? Get 50GB free!</span>
+          </Link>
+        )}
       </SidebarFooter>
     </Sidebar>
   )

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ZonixLogo } from '@/components/zonix-logo'
+import { Footer } from '@/components/footer'
 import { 
   Cloud, 
   Shield, 
@@ -41,30 +42,34 @@ const tiers = [
     period: 'forever',
     features: ['5 GB storage', '2 GB upload limit', 'AI Assistant (50/day)', 'Basic sharing'],
     cta: 'Get Started',
+    href: '/auth/signup',
     popular: false,
   },
   {
     name: 'Student',
     price: '$0',
-    period: 'with verification',
-    features: ['50 GB storage', '20 GB upload limit', 'AI Assistant (200/day)', 'AI File Organization', 'Priority support'],
-    cta: 'Verify Student Status',
+    period: '2 months trial',
+    features: ['20 GB storage', '10 GB upload limit', 'AI Assistant (200/day)', 'AI File Organization', 'Priority support'],
+    cta: 'Verify Student',
+    href: '/auth/signup?tier=student',
     popular: false,
   },
   {
     name: 'Premium',
-    price: '$4.99',
+    price: '$3',
     period: '/month',
-    features: ['100 GB storage', '50 GB upload limit', 'Unlimited AI features', 'Advanced AI tasks', 'Priority support'],
+    features: ['250 GB storage', '25 GB upload limit', 'AI Assistant (200/day)', 'Team management', 'Storage allocation'],
     cta: 'Upgrade Now',
+    href: '/pricing',
     popular: true,
   },
   {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    features: ['Custom storage', 'Custom limits', 'Dedicated support', 'SLA guarantee', 'Custom integrations'],
-    cta: 'Contact Sales',
+    name: 'Business',
+    price: '$6',
+    period: '/month',
+    features: ['1 TB storage', '100 GB upload limit', 'Unlimited AI', 'Unlimited teams', 'Advanced analytics'],
+    cta: 'Upgrade Now',
+    href: '/pricing',
     popular: false,
   },
 ]
@@ -99,70 +104,21 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
-        <div className="container mx-auto px-6 py-24 md:py-32">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-              <Sparkles className="h-4 w-4" />
-              Now with AI-powered file organization
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-balance mb-6">
-              Your files, everywhere you need them
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground text-pretty mb-8 max-w-2xl mx-auto">
-              Zonix Cloud gives you secure, intelligent cloud storage with AI-powered organization. 
-              Access your files from anywhere, share with anyone, and let AI handle the rest.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" asChild>
-                <Link href="/auth/signup">
-                  Start for free
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="#pricing">View pricing</Link>
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground mt-4">
-              No credit card required. 5 GB free forever.
-            </p>
-          </div>
-        </div>
-        
-        {/* Hero illustration */}
-        <div className="container mx-auto px-6 pb-24">
-          <div className="relative max-w-5xl mx-auto">
-            <div className="aspect-[16/10] rounded-xl border bg-gradient-to-br from-card to-muted/50 shadow-2xl overflow-hidden">
-              <div className="h-10 bg-muted/50 border-b flex items-center px-4 gap-2">
-                <div className="h-3 w-3 rounded-full bg-destructive/60" />
-                <div className="h-3 w-3 rounded-full bg-warning/60" />
-                <div className="h-3 w-3 rounded-full bg-success/60" />
-                <div className="flex-1 flex justify-center">
-                  <div className="h-5 w-48 rounded bg-background/50" />
-                </div>
-              </div>
-              <div className="flex h-[calc(100%-2.5rem)]">
-                <div className="w-56 border-r bg-sidebar/50 p-4 space-y-2">
-                  <div className="h-8 w-full rounded bg-primary/20" />
-                  <div className="h-6 w-3/4 rounded bg-muted" />
-                  <div className="h-6 w-3/4 rounded bg-muted" />
-                  <div className="h-6 w-3/4 rounded bg-muted" />
-                  <div className="h-6 w-3/4 rounded bg-muted" />
-                </div>
-                <div className="flex-1 p-6">
-                  <div className="grid grid-cols-4 gap-4">
-                    {[...Array(8)].map((_, i) => (
-                      <div key={i} className="aspect-square rounded-lg bg-muted/50 border flex flex-col items-center justify-center gap-2 p-4">
-                        <HardDrive className="h-8 w-8 text-primary/40" />
-                        <div className="h-3 w-16 rounded bg-muted" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+      <section className="py-20 md:py-32 bg-gradient-to-b from-blue-50 to-background">
+        <div className="container mx-auto px-6 text-center max-w-3xl">
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+            Secure Cloud Storage for Everyone
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+            Store, share, and organize your files with AI-powered organization. From 5GB free to 100TB enterprise.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" asChild className="text-base h-12">
+              <Link href="/auth/signup">Start for Free</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild className="text-base h-12">
+              <Link href="/pricing">View Pricing</Link>
+            </Button>
           </div>
         </div>
       </section>
@@ -240,7 +196,7 @@ export default function HomePage() {
                   variant={tier.popular ? 'default' : 'outline'}
                   asChild
                 >
-                  <Link href={tier.name === 'Enterprise' ? '/contact' : '/auth/signup'}>
+                  <Link href={tier.href}>
                     {tier.cta}
                   </Link>
                 </Button>
@@ -270,22 +226,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-12">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <ZonixLogo size="sm" />
-            <nav className="flex items-center gap-6 text-sm text-muted-foreground">
-              <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-              <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-              <Link href="/support" className="hover:text-foreground transition-colors">Support</Link>
-              <a href="mailto:gassetrashed454@gmail.com" className="hover:text-foreground transition-colors">Contact</a>
-            </nav>
-            <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} Zonix Cloud
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

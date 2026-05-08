@@ -1,4 +1,4 @@
-export type UserTier = 'free' | 'student' | 'premium' | 'enterprise'
+export type UserTier = 'free' | 'student' | 'premium' | 'business' | 'enterprise'
 export type UserRole = 'user' | 'support' | 'mod' | 'admin'
 export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed'
 
@@ -134,6 +134,7 @@ export const TIER_CONFIG: Record<UserTier, {
   upload_limit: number
   ai_daily_limit: number
   features: string[]
+  duration?: string
 }> = {
   free: {
     name: 'Free',
@@ -151,12 +152,13 @@ export const TIER_CONFIG: Record<UserTier, {
   student: {
     name: 'Student',
     price: 0,
-    storage_limit: 50 * 1024 * 1024 * 1024, // 50 GB
-    upload_limit: 20 * 1024 * 1024 * 1024, // 20 GB
+    storage_limit: 20 * 1024 * 1024 * 1024, // 20 GB
+    upload_limit: 10 * 1024 * 1024 * 1024, // 10 GB
     ai_daily_limit: 200,
+    duration: '2 months',
     features: [
-      '50 GB storage',
-      '20 GB upload limit',
+      '20 GB storage for 2 months',
+      '10 GB upload limit',
       'AI Assistant (200 uses/day)',
       'AI File Organization',
       'Priority support',
@@ -164,32 +166,52 @@ export const TIER_CONFIG: Record<UserTier, {
   },
   premium: {
     name: 'Premium',
-    price: 4.99,
-    storage_limit: 100 * 1024 * 1024 * 1024, // 100 GB
-    upload_limit: 50 * 1024 * 1024 * 1024, // 50 GB
-    ai_daily_limit: 500,
+    price: 3,
+    storage_limit: 250 * 1024 * 1024 * 1024, // 250 GB
+    upload_limit: 25 * 1024 * 1024 * 1024, // 25 GB
+    ai_daily_limit: 200,
     features: [
-      '100 GB storage',
-      '50 GB upload limit',
+      '250 GB storage',
+      '25 GB upload limit',
       'Unlimited AI Assistant',
-      'AI File Organization',
-      'Advanced AI Tasks',
+      'Team management (up to 5 members)',
+      'Storage allocation for team members',
+      'Advanced sharing controls',
+      'Priority support',
+    ],
+  },
+  business: {
+    name: 'Business',
+    price: 6,
+    storage_limit: 1024 * 1024 * 1024 * 1024, // 1 TB
+    upload_limit: 100 * 1024 * 1024 * 1024, // 100 GB
+    ai_daily_limit: 99999,
+    features: [
+      '1 TB storage',
+      '100 GB upload limit',
+      'Unlimited AI Assistant',
+      'Unlimited team members',
+      'Advanced storage allocation',
+      'Custom team quotas',
+      'Advanced analytics',
       'Priority support',
     ],
   },
   enterprise: {
     name: 'Enterprise',
     price: null,
-    storage_limit: 1024 * 1024 * 1024 * 1024, // 1 TB
-    upload_limit: 100 * 1024 * 1024 * 1024, // 100 GB
+    storage_limit: 100 * 1024 * 1024 * 1024 * 1024, // 100 TB max
+    upload_limit: 500 * 1024 * 1024 * 1024, // 500 GB
     ai_daily_limit: 99999,
     features: [
-      'Custom storage',
-      'Custom upload limits',
+      '1 TB - 100 TB storage (custom)',
+      'Unlimited upload limits',
       'Unlimited AI features',
-      'Dedicated support',
+      'Unlimited team members',
+      'Dedicated support team',
       'Custom integrations',
       'SLA guarantee',
+      'Purchase additional storage from team accounts',
     ],
   },
 }

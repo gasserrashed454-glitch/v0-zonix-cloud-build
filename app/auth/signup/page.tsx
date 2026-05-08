@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,19 +9,36 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
-import { sendVerificationCode, signUp } from '../actions'
-import { Mail, Lock, User, ArrowRight, CheckCircle } from 'lucide-react'
+import { sendVerificationCode, signUp, signInWithGoogle } from '../actions'
+import { Mail, Lock, User, ArrowRight, CheckCircle, Chrome } from 'lucide-react'
 
 type Step = 'email' | 'verify' | 'details'
 
 export default function SignUpPage() {
+  const router = useRouter()
   const [step, setStep] = useState<Step>('email')
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [email, setEmail] = useState('')
   const [expectedCode, setExpectedCode] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
+  const [showDevCode, setShowDevCode] = useState(false)
+
+  async function handleGoogleSignUp() {
+    setIsGoogleLoading(true)
+    try {
+      const result = await signInWithGoogle('signup')
+      if (result?.url) {
+        window.location.href = result.url
+      }
+    } catch (error) {
+      console.error('[v0] Google sign up error:', error)
+      toast.error('Failed to sign up with Google')
+      setIsGoogleLoading(false)
+    }
+  }
 
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault()
@@ -31,7 +49,14 @@ export default function SignUpPage() {
     if (result.success && result.code) {
       setExpectedCode(result.code)
       setStep('verify')
-      toast.success('Verification code sent to your email')
+      const isDevMode = (result as { devMode?: boolean }).devMode === true
+      if (isDevMode) {
+        setShowDevCode(true)
+        toast.success(`Your verification code is: ${result.code}`, { duration: 15000 })
+      } else {
+        setShowDevCode(false)
+        toast.success('Verification code sent to your email')
+      }
     } else {
       toast.error(result.error || 'Failed to send verification code')
     }
@@ -63,8 +88,11 @@ export default function SignUpPage() {
     
     if (result?.error) {
       toast.error(result.error)
-      setIsLoading(false)
+    } else if (result?.success) {
+      toast.success('Account created successfully!')
+      router.push('/dashboard')
     }
+    setIsLoading(false)
   }
 
   return (
@@ -144,9 +172,36 @@ export default function SignUpPage() {
                 </>
               )}
             </Button>
-            <p className="text-sm text-center text-muted-foreground">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-muted"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or</span>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleSignUp}
+              disabled={isGoogleLoading}
+            >
+              {isGoogleLoading ? (
+                <>
+                  <Spinner className="mr-2 h-4 w-4" />
+                  Signing up...
+                </>
+              ) : (
+                <>
+                  <Chrome className="mr-2 h-4 w-4" />
+                  Sign up with Google
+                </>
+              )}
+            </Button>
+            <p className="text-center text-sm text-muted-foreground">
               Already have an account?{' '}
-              <Link href="/auth/login" className="text-primary hover:underline font-medium">
+              <Link href="/auth/login" className="font-medium text-primary hover:underline">
                 Sign in
               </Link>
             </p>
@@ -160,6 +215,12 @@ export default function SignUpPage() {
             <p className="text-sm text-muted-foreground text-center">
               We sent a 6-digit code to <span className="font-medium text-foreground">{email}</span>
             </p>
+            {showDevCode && expectedCode && (
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Dev Mode - Your code:</p>
+                <p className="text-2xl font-mono font-bold text-primary tracking-widest">{expectedCode}</p>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="code">Verification code</Label>
               <Input

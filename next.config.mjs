@@ -6,6 +6,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Rebuild version - v2
 }
 
 export default nextConfig
