@@ -1,0 +1,29 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/*
+Disallow: /admin/*
+Disallow: /support-panel/*
+Disallow: /api/*
+Disallow: /_next/
+Disallow: /*.json$
+
+User-agent: Googlebot
+Allow: /
+Disallow: /dashboard/*
+Disallow: /admin/*
+Disallow: /support-panel/*
+Disallow: /api/*
+
+User-agent: Bingbot
+Allow: /
+Disallow: /dashboard/*
+Disallow: /admin/*
+Disallow: /support-panel/*
+Disallow: /api/*
+
+# Crawl delay to prevent overloading
+Crawl-delay: 0
+Request-rate: 1 per 1 second
+
+# Sitemap location
+Sitemap: https://zonix.me/sitemap.xml
