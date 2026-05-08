@@ -1,20 +1,25 @@
 name = "zonix-cloud"
-main = "./.output/server/index.js"
+type = "javascript"
+account_id = ""
+workers_dev = true
+route = ""
+zone_id = ""
 compatibility_date = "2024-12-18"
 compatibility_flags = ["nodejs_compat"]
 
+# Cloudflare Pages configuration
 [env.production]
 name = "zonix-cloud-prod"
-route = "zonix.me/*"
-zone_id = "YOUR_ZONE_ID"
+workers_dev = false
+routes = [
+  { pattern = "zonix.me/*", zone_name = "zonix.me" }
+]
 
 [build]
-command = "npm run build"
+command = "pnpm run build"
 cwd = "."
+watch_paths = ["app/**/*", "components/**/*", "lib/**/*", "public/**/*"]
 
 [build.upload]
-format = "service-worker"
-
-[[env.production.routes]]
-pattern = "zonix.me/*"
-zone_name = "zonix.me"
+format = "modules"
+main = "./.next/server/index.js"
