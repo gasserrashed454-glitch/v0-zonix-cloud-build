@@ -21,6 +21,9 @@ import {
 } from 'lucide-react'
 import { ChangePasswordForm } from './change-password-form'
 import { TwoFactorAuthSettings } from './two-factor-settings'
+import { createClient } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
+import type { Profile } from '@/lib/types'
 
 interface SettingsContentProps {
   user: User
