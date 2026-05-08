@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     const { error } = await supabase.auth.updateUser({ password: newPassword })
 
     if (error) {
-      console.error('[v0] Password update error:', error)
+      console.error('[LOG] Password update error:', error)
       return NextResponse.json({ error: 'Failed to update password' }, { status: 400 })
     }
 
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
           changed_at: new Date().toISOString(),
         })
     } catch (err) {
-      console.error('[v0] Failed to log password change:', err)
+      console.error('[LOG] Failed to log password change:', err)
       // Don't fail the request for this
     }
 
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       message: 'Password changed successfully' 
     })
   } catch (error) {
-    console.error('[v0] Password change error:', error)
+    console.error('[LOG] Password change error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

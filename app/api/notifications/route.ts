@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       })
     }
   } catch (error) {
-    console.error('[v0] Send notification error:', error)
+    console.error('[LOG] Send notification error:', error)
     return NextResponse.json({ error: 'Failed to send notification' }, { status: 500 })
   }
 }
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
       unreadCount,
     })
   } catch (error) {
-    console.error('[v0] Fetch notifications error:', error)
+    console.error('[LOG] Fetch notifications error:', error)
     return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 })
   }
 }

@@ -72,7 +72,7 @@ export default function TeamManagementPage() {
 
       setTeamMembers(membersWithStorage)
     } catch (error) {
-      console.error('[v0] Error:', error)
+      console.error('[LOG] Error:', error)
       toast.error('Failed to load team members')
     } finally {
       setIsLoading(false)
@@ -94,7 +94,7 @@ export default function TeamManagementPage() {
           filter: `team_owner_id=eq.${user.id}`,
         },
         (payload) => {
-          console.log('[v0] Team members changed:', payload)
+          console.log('[LOG] Team members changed:', payload)
           loadTeamMembers()
         }
       )
@@ -136,7 +136,7 @@ export default function TeamManagementPage() {
         })
 
       if (error) {
-        console.error('[v0] Error adding member:', error)
+        console.error('[LOG] Error adding member:', error)
         toast.error(error.message)
         return
       }
@@ -147,7 +147,7 @@ export default function TeamManagementPage() {
       setShowAddMember(false)
       await loadTeamMembers()
     } catch (error) {
-      console.error('[v0] Error:', error)
+      console.error('[LOG] Error:', error)
       toast.error('Failed to add team member')
     } finally {
       setIsAdding(false)
@@ -169,7 +169,7 @@ export default function TeamManagementPage() {
       toast.success('Member removed')
       await loadTeamMembers()
     } catch (error) {
-      console.error('[v0] Error:', error)
+      console.error('[LOG] Error:', error)
       toast.error('Failed to remove member')
     }
   }
@@ -198,7 +198,7 @@ export default function TeamManagementPage() {
       toast.success('Storage allocation updated')
       await loadTeamMembers()
     } catch (error) {
-      console.error('[v0] Error:', error)
+      console.error('[LOG] Error:', error)
       toast.error('Failed to update allocation')
     }
   }

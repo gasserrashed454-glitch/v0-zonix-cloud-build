@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'No trash files to clean up', deleted: 0 })
     }
 
-    // Delete from Vercel Blob
+    // Delete from Cloud Storage
     for (const file of trashedFiles) {
       try {
         if (file.blob_pathname) {

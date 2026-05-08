@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
 
     if (updateError) {
-      console.error('[v0] Failed to store 2FA:', updateError)
+      console.error('[LOG] Failed to store 2FA:', updateError)
       return NextResponse.json({ error: 'Failed to enable 2FA' }, { status: 500 })
     }
 
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       backupCodes: backupCodes || [],
     })
   } catch (error) {
-    console.error('[v0] 2FA verify error:', error)
+    console.error('[LOG] 2FA verify error:', error)
     return NextResponse.json({ error: 'Failed to verify 2FA' }, { status: 500 })
   }
 }

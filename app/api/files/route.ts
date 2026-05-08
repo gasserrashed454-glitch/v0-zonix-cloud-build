@@ -92,7 +92,7 @@ export async function DELETE(request: NextRequest) {
         .in('id', fileIds)
         .eq('user_id', user.id)
 
-      // Delete from Vercel Blob
+      // Delete from Cloud Storage
       if (files) {
         for (const file of files) {
           try {

@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ servers: safeServers })
   } catch (error) {
-    console.error('[v0] VPS servers GET error:', error)
+    console.error('[LOG] VPS servers GET error:', error)
     return NextResponse.json({ error: 'Failed to fetch servers' }, { status: 500 })
   }
 }
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ server: { ...server, password: undefined } }, { status: 201 })
   } catch (error) {
-    console.error('[v0] VPS servers POST error:', error)
+    console.error('[LOG] VPS servers POST error:', error)
     return NextResponse.json({ error: 'Failed to create server' }, { status: 500 })
   }
 }
@@ -166,7 +166,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('[v0] VPS servers DELETE error:', error)
+    console.error('[LOG] VPS servers DELETE error:', error)
     return NextResponse.json({ error: 'Failed to delete server' }, { status: 500 })
   }
 }

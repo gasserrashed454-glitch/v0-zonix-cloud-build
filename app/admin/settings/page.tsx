@@ -33,7 +33,7 @@ export default async function AdminSettingsPage() {
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Azure Storage is optional. Files will use Vercel Blob by default.
+              Azure Storage is optional. Files will use Cloud Storage by default.
             </AlertDescription>
           </Alert>
 

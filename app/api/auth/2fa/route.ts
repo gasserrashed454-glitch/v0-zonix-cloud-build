@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   } catch (error) {
-    console.error('[v0] 2FA error:', error)
+    console.error('[LOG] 2FA error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

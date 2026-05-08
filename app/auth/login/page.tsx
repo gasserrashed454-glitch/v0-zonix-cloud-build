@@ -42,7 +42,7 @@ export default function LoginPage() {
         window.location.href = result.url
       }
     } catch (error) {
-      console.error('[v0] Google sign in error:', error)
+      console.error('[LOG] Google sign in error:', error)
       toast.error('Failed to sign in with Google')
       setIsGoogleLoading(false)
     }

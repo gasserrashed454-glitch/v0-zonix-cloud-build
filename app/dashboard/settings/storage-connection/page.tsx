@@ -88,7 +88,7 @@ export default function StorageConnectionPage() {
       setShowAddForm(false)
       toast.success('Storage connection created successfully')
     } catch (error) {
-      console.error('[v0] Storage connection error:', error)
+      console.error('[LOG] Storage connection error:', error)
       toast.error('Failed to create storage connection')
     } finally {
       setIsLoading(false)
@@ -116,7 +116,7 @@ export default function StorageConnectionPage() {
         toast.error('Connection test failed')
       }
     } catch (error) {
-      console.error('[v0] Test error:', error)
+      console.error('[LOG] Test error:', error)
       toast.error('Failed to test connection')
     } finally {
       setTestingConnection(null)

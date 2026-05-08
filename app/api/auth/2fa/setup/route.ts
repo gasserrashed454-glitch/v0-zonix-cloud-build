@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   } catch (error) {
-    console.error('[v0] 2FA setup error:', error)
+    console.error('[LOG] 2FA setup error:', error)
     return NextResponse.json({ error: 'Failed to setup 2FA' }, { status: 500 })
   }
 }

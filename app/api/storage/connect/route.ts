@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('[v0] Storage connection error:', error)
+      console.error('[LOG] Storage connection error:', error)
       return NextResponse.json({ error: 'Failed to save connection' }, { status: 500 })
     }
 
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('[v0] Storage connection error:', error)
+    console.error('[LOG] Storage connection error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ connections: safe })
   } catch (error) {
-    console.error('[v0] Fetch connections error:', error)
+    console.error('[LOG] Fetch connections error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -169,7 +169,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('[v0] Delete connection error:', error)
+    console.error('[LOG] Delete connection error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
