@@ -34,7 +34,7 @@ export default function SignUpPage() {
         window.location.href = result.url
       }
     } catch (error) {
-      console.error('[v0] Google sign up error:', error)
+      console.error('[LOG] Google sign up error:', error)
       toast.error('Failed to sign up with Google')
       setIsGoogleLoading(false)
     }

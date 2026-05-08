@@ -65,7 +65,7 @@ export async function POST(req: Request) {
       .single()
 
     if (shareError) {
-      console.error('[v0] Share creation error:', shareError)
+      console.error('[LOG] Share creation error:', shareError)
       return NextResponse.json(
         { error: 'Failed to create share link' },
         { status: 500 }
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
       createdAt: shareRecord.created_at,
     })
   } catch (error) {
-    console.error('[v0] Share link error:', error)
+    console.error('[LOG] Share link error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -126,7 +126,7 @@ export async function GET(req: Request) {
       })),
     })
   } catch (error) {
-    console.error('[v0] Get shares error:', error)
+    console.error('[LOG] Get shares error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -161,7 +161,7 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('[v0] Delete share error:', error)
+    console.error('[LOG] Delete share error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

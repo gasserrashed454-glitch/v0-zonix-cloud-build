@@ -1,21 +1,29 @@
-# v0-zonix-cloud-build
+# Zonix Cloud
 
 Zonix Cloud - Secure cloud storage with AI-powered file organization and real-time collaboration.
 
 **Latest Updates:**
 - ✅ Fixed UI menu text overflow issues
 - ✅ Fixed logo display in footer and admin panel  
-- ✅ Added floating AI chat with Google Gemini 1.5 Flash
+- ✅ Added floating AI chat with AI-powered assistance
 - ✅ Real-time ticket sync for support panel
-- ✅ Debug logging for API endpoints
+- ✅ Comprehensive SEO optimization with sitemap and structured data
+- ✅ VPS/NAS storage infrastructure for scalable deployment
+- ✅ 2FA and password security features
+- ✅ Global support email configuration
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+This is a [Next.js](https://nextjs.org) project providing enterprise-grade cloud storage solutions.
 
-## Built with v0
+## Features
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
-
-[Continue working on v0 →](https://v0.app/chat/projects/prj_TvF7AJCUmGvBFMNdxpJeogxg6p0P)
+- Secure cloud storage with end-to-end encryption
+- AI-powered file organization and search
+- Real-time collaboration and team management
+- 2FA authentication and password security
+- VPS/NAS storage integration
+- Support ticket system
+- File sharing with expiration control
+- Multi-tier pricing (Free, Student, Pro, Business)
 
 ## Getting Started
 
@@ -39,6 +47,13 @@ To learn more, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
 
-<a href="https://v0.app/chat/api/kiro/clone/gasserrashed454-glitch/v0-zonix-cloud-build" alt="Open in Kiro"><img src="https://pdgvvgmkdvyeydso.public.blob.vercel-storage.com/open%20in%20kiro.svg?sanitize=true" /></a>
+## Deployment
+
+This project can be deployed on:
+- Cloudflare Pages
+- Vercel
+- Self-hosted servers
+- Any Node.js compatible hosting platform
+
+For Cloudflare Pages deployment, use the included build configuration and environment variables.

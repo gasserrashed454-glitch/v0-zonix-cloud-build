@@ -23,15 +23,15 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
 
     if (error) {
-      console.error('[v0] Storage settings error:', error)
+      console.error('[LOG] Storage settings error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    console.log('[v0] Storage settings updated for user:', user.id)
+    console.log('[LOG] Storage settings updated for user:', user.id)
 
     return NextResponse.json({ success: true, message: 'Settings saved' })
   } catch (error) {
-    console.error('[v0] Storage settings error:', error)
+    console.error('[LOG] Storage settings error:', error)
     return NextResponse.json({ error: 'Failed to save settings' }, { status: 500 })
   }
 }

@@ -29,7 +29,7 @@ export async function testSSHConnection(
   try {
     // In production, use ssh2 library
     // For now, return a test response
-    console.log('[v0] SSH connection test:', { host, username, port })
+    console.log('[LOG] SSH connection test:', { host, username, port })
     return { success: true }
   } catch (error) {
     return { 
@@ -47,7 +47,7 @@ export async function testSMBConnection(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // In production, use smbhttps library
-    console.log('[v0] SMB connection test:', { host, username, port })
+    console.log('[LOG] SMB connection test:', { host, username, port })
     return { success: true }
   } catch (error) {
     return {
@@ -64,7 +64,7 @@ export async function testNFSConnection(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // In production, use nfs3 library
-    console.log('[v0] NFS connection test:', { host, exportPath, port })
+    console.log('[LOG] NFS connection test:', { host, exportPath, port })
     return { success: true }
   } catch (error) {
     return {

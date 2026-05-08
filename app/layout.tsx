@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/sonner'
 import { COMPANY_DOMAIN } from '@/lib/config'
 import './globals.css'
@@ -125,45 +124,43 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
+// JSON-LD structured data for SEO - defined as constant to avoid hydration issues
+const jsonLdString = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Zonix Cloud',
+  url: 'https://zonix.me',
+  logo: 'https://zonix.me/logo.png',
+  description: 'Secure cloud storage with AI-powered file management and team collaboration',
+  sameAs: ['https://twitter.com/zonixcloud'],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'Customer Service',
+    email: 'support@zonix.me',
+    url: 'https://zonix.me/support',
+  },
+  founder: {
+    '@type': 'Person',
+    name: 'Zonix Team',
+  },
+})
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'Zonix Cloud',
-    url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
-    description: 'Secure cloud storage with AI-powered file management and team collaboration',
-    sameAs: [
-      'https://twitter.com/zonixcloud',
-    ],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'Customer Service',
-      email: 'support@zonix.me',
-      url: `${siteUrl}/support`,
-    },
-    founder: {
-      '@type': 'Person',
-      name: 'Zonix Team',
-    },
-  }
-
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdString }}
         />
       </head>
       <body className="font-sans antialiased">
         {children}
         <Toaster position="bottom-right" />
-        <Analytics />
       </body>
     </html>
   )

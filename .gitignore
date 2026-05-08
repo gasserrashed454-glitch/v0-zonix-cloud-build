@@ -9,8 +9,42 @@ next.user-config.*
 
 # Environment variables
 .env*.local
+.env.production.local
+.env.test.local
 
-# Common ignores
-node_modules
+# Build output
 .next/
+dist/
+build/
+.output/
+
+# Cloudflare
+.wrangler/
+wrangler.env
+wrangler.env.*.js
+
+# Dependencies
+node_modules
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# OS files
 .DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+
+# IDE
+.vscode/
+.idea/
+*.sublime-workspace
+*.iml
+
+# Testing
+coverage/
+.nyc_output/
+
+# Deployment archives
+zonix-cloud-*.zip

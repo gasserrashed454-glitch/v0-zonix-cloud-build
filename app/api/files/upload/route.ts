@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Upload to Vercel Blob
+    // Upload to Cloud Storage
     const pathname = `${user.id}/${Date.now()}-${file.name}`
     const blob = await put(pathname, file, {
       access: 'private',

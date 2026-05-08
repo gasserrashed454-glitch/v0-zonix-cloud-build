@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
     }
 
-    console.log('[v0] AI Assistant received message:', message)
+    console.log('[LOG] AI Assistant received message:', message)
 
     const conversationHistory = history?.map((msg: { role: string; content: string }) => ({
       role: msg.role as 'user' | 'assistant',
@@ -63,7 +63,7 @@ GUIDELINES:
 - Use bullet points for features
 - Keep responses under 150 words`
 
-    console.log('[v0] Calling Groq with', conversationHistory.length + 1, 'messages')
+    console.log('[LOG] Calling Groq with', conversationHistory.length + 1, 'messages')
 
     const result = await generateText({
       model: groq('mixtral-8x7b-32768'),
@@ -75,14 +75,14 @@ GUIDELINES:
       maxOutputTokens: 300,
     })
 
-    console.log('[v0] Groq response:', result.text.substring(0, 50) + '...')
+    console.log('[LOG] Groq response:', result.text.substring(0, 50) + '...')
 
     return NextResponse.json({ 
       response: result.text,
       success: true 
     })
   } catch (error) {
-    console.error('[v0] AI error:', error)
+    console.error('[LOG] AI error:', error)
     return NextResponse.json(
       { 
         error: 'AI service temporarily unavailable',

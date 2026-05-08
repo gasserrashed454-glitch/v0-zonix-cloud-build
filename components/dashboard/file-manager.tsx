@@ -229,7 +229,7 @@ export function FileManager({
       mutateFiles()
       toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites')
     } catch (error) {
-      console.error('[v0] Favorite error:', error)
+      console.error('[LOG] Favorite error:', error)
       toast.error('Failed to update favorite status')
     }
   }
@@ -249,7 +249,7 @@ export function FileManager({
       mutateFiles()
       toast.success('Moved to trash')
     } catch (error) {
-      console.error('[v0] Trash error:', error)
+      console.error('[LOG] Trash error:', error)
       toast.error('Failed to move to trash')
     }
   }
@@ -299,7 +299,7 @@ export function FileManager({
       
       toast.success('Download started')
     } catch (error) {
-      console.error('[v0] Download error:', error)
+      console.error('[LOG] Download error:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to download file')
     }
   }
@@ -335,7 +335,7 @@ export function FileManager({
       setShareEmail('')
       setSelectedFileForShare(null)
     } catch (error) {
-      console.error('[v0] Share error:', error)
+      console.error('[LOG] Share error:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to share file')
     } finally {
       setIsSharing(false)

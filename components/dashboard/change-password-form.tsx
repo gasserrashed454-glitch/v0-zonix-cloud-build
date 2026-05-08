@@ -47,7 +47,7 @@ export function ChangePasswordForm() {
       toast.success('Password changed successfully')
       setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' })
     } catch (error) {
-      console.error('[v0] Password change error:', error)
+      console.error('[LOG] Password change error:', error)
       toast.error('Failed to change password')
     } finally {
       setIsLoading(false)

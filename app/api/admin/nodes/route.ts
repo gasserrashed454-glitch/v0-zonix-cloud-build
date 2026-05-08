@@ -34,7 +34,7 @@ export async function GET() {
 
     return NextResponse.json({ nodes: nodes.value || [] })
   } catch (error) {
-    console.error('[v0] Get nodes error:', error)
+    console.error('[LOG] Get nodes error:', error)
     return NextResponse.json({ error: 'Failed to get nodes' }, { status: 500 })
   }
 }
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    console.log('[v0] Adding storage node:', name, 'at', hostname)
+    console.log('[LOG] Adding storage node:', name, 'at', hostname)
 
     // Get existing nodes
     const { data: existingSettings } = await supabase
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
       })
 
     if (upsertError) {
-      console.error('[v0] Upsert error:', upsertError)
+      console.error('[LOG] Upsert error:', upsertError)
       return NextResponse.json({ error: upsertError.message }, { status: 500 })
     }
 
@@ -121,14 +121,14 @@ export async function POST(request: NextRequest) {
         })
     }
 
-    console.log('[v0] Node added successfully:', newNode.id)
+    console.log('[LOG] Node added successfully:', newNode.id)
 
     return NextResponse.json({ 
       node: newNode,
       success: true 
     })
   } catch (error) {
-    console.error('[v0] Add node error:', error)
+    console.error('[LOG] Add node error:', error)
     return NextResponse.json({ error: 'Failed to add node' }, { status: 500 })
   }
 }

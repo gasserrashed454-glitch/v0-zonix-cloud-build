@@ -127,7 +127,7 @@ export function FileInteractionMenu({
       await navigator.clipboard.writeText(data.shareUrl)
       toast.success('Share link copied to clipboard!')
     } catch (error) {
-      console.error('[v0] Share error:', error)
+      console.error('[LOG] Share error:', error)
       toast.error('Failed to generate share link')
     } finally {
       setIsLoading(false)
@@ -160,7 +160,7 @@ export function FileInteractionMenu({
       setShareEmail('')
       setStep('main')
     } catch (error) {
-      console.error('[v0] Email share error:', error)
+      console.error('[LOG] Email share error:', error)
       toast.error('Failed to share via email')
     } finally {
       setIsLoading(false)

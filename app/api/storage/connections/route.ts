@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     const { password: _, ...safe } = data
     return NextResponse.json(safe)
   } catch (error) {
-    console.error('[v0] Storage connection error:', error)
+    console.error('[LOG] Storage connection error:', error)
     return NextResponse.json(
       { error: 'Failed to create storage connection' },
       { status: 500 }
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(data)
   } catch (error) {
-    console.error('[v0] Get connections error:', error)
+    console.error('[LOG] Get connections error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch connections' },
       { status: 500 }

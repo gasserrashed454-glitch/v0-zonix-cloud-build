@@ -14,11 +14,7 @@ function getRedirectUrl(path: string = ''): string {
   if (siteUrl) {
     return `${siteUrl}${path}`
   }
-  // For Vercel deployments, use the Vercel URL
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}${path}`
-  }
-  // Fallback - should not be used in production
+  // Fallback for development
   return `http://localhost:3000${path}`
 }
 

@@ -52,7 +52,7 @@ export function StorageConnectionManager() {
         setConnections(data.connections || [])
       }
     } catch (error) {
-      console.error('[v0] Fetch connections error:', error)
+      console.error('[LOG] Fetch connections error:', error)
     }
   }
 

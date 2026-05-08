@@ -66,7 +66,7 @@ export function FileViewer({ isOpen, onClose, fileId, filePathname, fileName, mi
       toast.success('Download started')
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to download file'
-      console.error('[v0] Download error:', message)
+      console.error('[LOG] Download error:', message)
       setError(message)
       toast.error(message)
     }
