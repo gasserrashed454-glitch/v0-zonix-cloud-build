@@ -770,7 +770,8 @@ export function FileManager({
           setViewerOpen(false)
           setViewingFile(null)
         }}
-        fileUrl={viewingFile?.blob_url || ''}
+        fileId={viewingFile?.id || ''}
+        filePathname={viewingFile?.blob_pathname || ''}
         fileName={viewingFile?.name || ''}
         mimeType={viewingFile?.mime_type || 'application/octet-stream'}
       />

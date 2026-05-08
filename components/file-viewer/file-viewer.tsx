@@ -13,21 +13,27 @@ import {
   ZoomOut,
   ChevronLeft,
   ChevronRight,
+  AlertTriangle,
 } from 'lucide-react'
 
 interface FileViewerProps {
   isOpen: boolean
   onClose: () => void
-  fileUrl: string
+  fileId: string
+  filePathname: string
   fileName: string
   mimeType: string
 }
 
-export function FileViewer({ isOpen, onClose, fileUrl, fileName, mimeType }: FileViewerProps) {
+export function FileViewer({ isOpen, onClose, fileId, filePathname, fileName, mimeType }: FileViewerProps) {
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [zoom, setZoom] = useState(100)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+
+  // Construct the serve URL
+  const fileUrl = filePathname ? `/api/files/serve?pathname=${encodeURIComponent(filePathname)}` : ''
 
   const getFileType = () => {
     if (mimeType.startsWith('image/')) return 'image'
@@ -43,7 +49,11 @@ export function FileViewer({ isOpen, onClose, fileUrl, fileName, mimeType }: Fil
 
   const handleDownload = async () => {
     try {
+      if (!fileUrl) throw new Error('File URL not available')
       const response = await fetch(fileUrl)
+      if (!response.ok) {
+        throw new Error(response.status === 404 ? 'File not found' : 'Download failed')
+      }
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -55,11 +65,34 @@ export function FileViewer({ isOpen, onClose, fileUrl, fileName, mimeType }: Fil
       document.body.removeChild(a)
       toast.success('Download started')
     } catch (error) {
-      toast.error('Failed to download file')
+      const message = error instanceof Error ? error.message : 'Failed to download file'
+      console.error('[v0] Download error:', message)
+      setError(message)
+      toast.error(message)
     }
   }
 
   const renderContent = () => {
+    if (error) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full gap-4">
+          <AlertTriangle className="h-12 w-12 text-destructive" />
+          <p className="text-muted-foreground text-center">{error}</p>
+          <Button variant="outline" onClick={handleDownload}>
+            Download Instead
+          </Button>
+        </div>
+      )
+    }
+
+    if (!fileUrl) {
+      return (
+        <div className="flex items-center justify-center h-full">
+          <p className="text-muted-foreground">No file path available</p>
+        </div>
+      )
+    }
+
     switch (fileType) {
       case 'image':
         return (
@@ -70,6 +103,12 @@ export function FileViewer({ isOpen, onClose, fileUrl, fileName, mimeType }: Fil
               className="max-h-full max-w-full"
               style={{ transform: `scale(${zoom / 100})` }}
               onLoad={() => setIsLoading(false)}
+              onError={() => {
+                const msg = 'Failed to load image'
+                setError(msg)
+                setIsLoading(false)
+                toast.error(msg)
+              }}
             />
           </div>
         )
@@ -87,6 +126,11 @@ export function FileViewer({ isOpen, onClose, fileUrl, fileName, mimeType }: Fil
             src={fileUrl}
             className="w-full h-full border-0"
             onLoad={() => setIsLoading(false)}
+            onError={() => {
+              const msg = 'Failed to load text file'
+              setError(msg)
+              setIsLoading(false)
+            }}
           />
         )
       default:
