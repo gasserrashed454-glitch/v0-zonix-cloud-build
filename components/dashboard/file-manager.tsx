@@ -43,9 +43,8 @@ import {
   FileSpreadsheetIcon,
   FileIcon as DefaultFileIcon,
 } from 'lucide-react'
-import Link from 'next/link'
-import useSWR from 'swr'
-import { createClient } from '@/lib/supabase/client'
+import { FileInteractionMenu } from './file-interaction-menu'
+import { FileViewer } from '../file-viewer/file-viewer'
 
 interface FileManagerProps {
   userId: string
@@ -80,6 +79,10 @@ export function FileManager({
   const [showNewFolderDialog, setShowNewFolderDialog] = useState(false)
   const [newFolderName, setNewFolderName] = useState('')
   const [isCreatingFolder, setIsCreatingFolder] = useState(false)
+  const [selectedFileForMenu, setSelectedFileForMenu] = useState<File | null>(null)
+  const [fileInteractionOpen, setFileInteractionOpen] = useState(false)
+  const [viewerOpen, setViewerOpen] = useState(false)
+  const [viewingFile, setViewingFile] = useState<File | null>(null)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [selectedFileForShare, setSelectedFileForShare] = useState<File | null>(null)
   const [shareEmail, setShareEmail] = useState('')
@@ -249,6 +252,28 @@ export function FileManager({
       console.error('[v0] Trash error:', error)
       toast.error('Failed to move to trash')
     }
+  }
+
+  const handleMenuShareFile = async (file: File) => {
+    // This opens the share menu, which is handled by FileInteractionMenu
+    return Promise.resolve()
+  }
+
+  const handleViewFile = (file: File) => {
+    setViewingFile(file)
+    setViewerOpen(true)
+  }
+
+  const handleMenuFavorite = async (file: File) => {
+    return handleToggleFavorite(file.id, file.is_favorite)
+  }
+
+  const handleMenuDownload = (file: File) => {
+    return handleDownloadFile(file)
+  }
+
+  const handleMenuDelete = async (file: File) => {
+    return handleMoveToTrash(file.id)
   }
 
   const handleDownloadFile = async (file: File, e?: React.MouseEvent) => {
@@ -458,7 +483,11 @@ export function FileManager({
           {files.map((file: File) => (
             <div
               key={file.id}
-              className="group relative flex flex-col items-center p-4 rounded-lg border hover:bg-muted/50 hover:border-primary/50 transition-colors"
+              onClick={() => {
+                setSelectedFileForMenu(file)
+                setFileInteractionOpen(true)
+              }}
+              className="group relative flex flex-col items-center p-4 rounded-lg border hover:bg-muted/50 hover:border-primary/50 transition-colors cursor-pointer"
             >
               <div className="absolute top-2 left-2">
                 <Checkbox
@@ -718,6 +747,33 @@ export function FileManager({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* File Interaction Menu */}
+      <FileInteractionMenu
+        file={selectedFileForMenu}
+        isOpen={fileInteractionOpen}
+        onClose={() => {
+          setFileInteractionOpen(false)
+          setSelectedFileForMenu(null)
+        }}
+        onView={handleViewFile}
+        onFavorite={handleMenuFavorite}
+        onDownload={handleMenuDownload}
+        onDelete={handleMenuDelete}
+        onRefresh={() => mutateFiles()}
+      />
+
+      {/* File Viewer */}
+      <FileViewer
+        isOpen={viewerOpen}
+        onClose={() => {
+          setViewerOpen(false)
+          setViewingFile(null)
+        }}
+        fileUrl={viewingFile?.blob_url || ''}
+        fileName={viewingFile?.name || ''}
+        mimeType={viewingFile?.mime_type || 'application/octet-stream'}
+      />
     </div>
   )
 }
