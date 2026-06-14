@@ -10,25 +10,15 @@ function generateCode(): string {
 }
 
 function getRedirectUrl(path: string = ''): string {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-  if (siteUrl) {
-    return `${siteUrl}${path}`
-  }
-  // For Vercel deployments, use the Vercel URL
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}${path}`
-  }
-  // Fallback - should not be used in production
-  return `http://localhost:3000${path}`
+  // Always use zonix.me in production
+  return `https://zonix.me${path}`
 }
 
 export async function sendVerificationCode(email: string, type: 'signup' | 'student') {
   const code = generateCode()
   
-  // Check if Resend API key is available
   const resendApiKey = process.env.RESEND_API_KEY
   if (!resendApiKey) {
-    // Dev mode - return code directly without sending email
     console.log(`[DEV MODE] Verification code for ${email}: ${code}`)
     return { success: true, code, devMode: true }
   }
@@ -84,7 +74,7 @@ export async function signUp(formData: FormData) {
     email,
     password,
     options: {
-      emailRedirectTo: getRedirectUrl('/auth/verify-email'),
+      emailRedirectTo: getRedirectUrl('/auth/callback'),
       data: {
         full_name: fullName,
       },
@@ -95,21 +85,19 @@ export async function signUp(formData: FormData) {
     return { error: error.message }
   }
 
-  // Create profile for new user
   if (data.user) {
     await supabase
       .from('profiles')
-      .insert({
+      .upsert({
         id: data.user.id,
         email,
         full_name: fullName,
         tier: 'free',
         role: 'user',
-        storage_limit: 5 * 1024 * 1024 * 1024, // 5 GB for free
-        upload_limit: 1024 * 1024 * 1024, // 1 GB
+        storage_limit: 5 * 1024 * 1024 * 1024,
+        upload_limit: 1024 * 1024 * 1024,
         ai_daily_limit: 50,
-      })
-      .single()
+      }, { onConflict: 'id' })
   }
 
   return { success: true }
@@ -150,10 +138,8 @@ export async function verifyStudentEmail(formData: FormData) {
     return { error: 'Invalid verification code' }
   }
 
-  // Extract school domain from email
   const schoolDomain = studentEmail.split('@')[1]
   
-  // Update user profile to student tier
   const { data: { user } } = await supabase.auth.getUser()
   
   if (!user) {
@@ -167,8 +153,8 @@ export async function verifyStudentEmail(formData: FormData) {
       student_verified: true,
       student_school: schoolDomain,
       student_verified_at: new Date().toISOString(),
-      storage_limit: 50 * 1024 * 1024 * 1024, // 50 GB
-      upload_limit: 20 * 1024 * 1024 * 1024, // 20 GB
+      storage_limit: 50 * 1024 * 1024 * 1024,
+      upload_limit: 20 * 1024 * 1024 * 1024,
       ai_daily_limit: 200,
     })
     .eq('id', user.id)
@@ -217,6 +203,27 @@ export async function signInWithGoogle(type: 'signin' | 'signup') {
         access_type: 'offline',
         prompt: 'consent',
       },
+    },
+  })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  if (data.url) {
+    return { url: data.url }
+  }
+
+  throw new Error('No OAuth URL returned')
+}
+
+export async function signInWithGitHub(type: 'signin' | 'signup') {
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'github',
+    options: {
+      redirectTo: getRedirectUrl('/auth/callback'),
     },
   })
 
