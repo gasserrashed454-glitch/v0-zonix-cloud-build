@@ -4,40 +4,46 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  const origin = requestUrl.origin
+  const origin = 'https://zonix.me'
 
   if (code) {
     const supabase = await createClient()
     const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!exchangeError) {
-      // Verify/create profile for Google OAuth user
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user) {
-        // Check if profile exists
+        const provider = user.app_metadata?.provider || 'email'
+
         const { data: existingProfile } = await supabase
           .from('profiles')
-          .select('id')
-          .eq('id', user.id)
-          .single()
+          .select('id, email')
+          .eq('email', user.email || '')
+          .maybeSingle()
 
         if (!existingProfile) {
-          // Create profile for new OAuth user
+          const fullName =
+            user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
+            user.user_metadata?.user_name ||
+            user.email?.split('@')[0] ||
+            'User'
+
           await supabase
             .from('profiles')
-            .insert({
+            .upsert({
               id: user.id,
               email: user.email || '',
-              full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+              full_name: fullName,
               tier: 'free',
               role: 'user',
-              storage_limit: 5 * 1024 * 1024 * 1024, // 5 GB for free
-              upload_limit: 1024 * 1024 * 1024, // 1 GB
+              storage_limit: 5 * 1024 * 1024 * 1024,
+              upload_limit: 1024 * 1024 * 1024,
               ai_daily_limit: 50,
-              oauth_provider: 'google',
-              oauth_id: user.user_metadata?.sub,
-            })
+              oauth_provider: provider,
+              oauth_id: user.user_metadata?.sub || user.user_metadata?.id?.toString(),
+            }, { onConflict: 'id' })
         }
       }
 
@@ -45,6 +51,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Return the user to an error page with some instructions
-  return NextResponse.redirect(`${origin}/auth/error`)
+  return NextResponse.redirect(`${origin}/auth/login?error=auth_failed`)
 }
