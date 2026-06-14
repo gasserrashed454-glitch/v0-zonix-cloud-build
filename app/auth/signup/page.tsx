@@ -9,8 +9,8 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
-import { sendVerificationCode, signUp, signInWithGoogle } from '../actions'
-import { Mail, Lock, User, ArrowRight, CheckCircle, Chrome } from 'lucide-react'
+import { sendVerificationCode, signUp, signInWithGoogle, signInWithGitHub } from '../actions'
+import { Mail, Lock, User, ArrowRight, CheckCircle, Chrome, Github } from 'lucide-react'
 
 type Step = 'email' | 'verify' | 'details'
 
@@ -19,6 +19,7 @@ export default function SignUpPage() {
   const [step, setStep] = useState<Step>('email')
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [isGitHubLoading, setIsGitHubLoading] = useState(false)
   const [email, setEmail] = useState('')
   const [expectedCode, setExpectedCode] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
@@ -30,22 +31,28 @@ export default function SignUpPage() {
     setIsGoogleLoading(true)
     try {
       const result = await signInWithGoogle('signup')
-      if (result?.url) {
-        window.location.href = result.url
-      }
-    } catch (error) {
-      console.error('[v0] Google sign up error:', error)
+      if (result?.url) window.location.href = result.url
+    } catch {
       toast.error('Failed to sign up with Google')
       setIsGoogleLoading(false)
+    }
+  }
+
+  async function handleGitHubSignUp() {
+    setIsGitHubLoading(true)
+    try {
+      const result = await signInWithGitHub('signup')
+      if (result?.url) window.location.href = result.url
+    } catch {
+      toast.error('Failed to sign up with GitHub')
+      setIsGitHubLoading(false)
     }
   }
 
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault()
     setIsLoading(true)
-
     const result = await sendVerificationCode(email, 'signup')
-    
     if (result.success && result.code) {
       setExpectedCode(result.code)
       setStep('verify')
@@ -76,16 +83,13 @@ export default function SignUpPage() {
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault()
     setIsLoading(true)
-
     const formData = new FormData()
     formData.append('email', email)
     formData.append('password', password)
     formData.append('fullName', fullName)
     formData.append('verificationCode', verificationCode)
     formData.append('expectedCode', expectedCode)
-
     const result = await signUp(formData)
-    
     if (result?.error) {
       toast.error(result.error)
     } else if (result?.success) {
@@ -106,32 +110,25 @@ export default function SignUpPage() {
         </CardDescription>
       </CardHeader>
 
-      {/* Step indicators */}
       <div className="px-6 pb-4">
         <div className="flex items-center justify-center gap-2">
           {(['email', 'verify', 'details'] as const).map((s, i) => (
             <div key={s} className="flex items-center">
-              <div
-                className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-                  step === s
-                    ? 'bg-primary text-primary-foreground'
-                    : ['verify', 'details'].indexOf(step) > ['email', 'verify', 'details'].indexOf(s)
-                    ? 'bg-primary/20 text-primary'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
+              <div className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                step === s
+                  ? 'bg-primary text-primary-foreground'
+                  : ['verify', 'details'].indexOf(step) > ['email', 'verify', 'details'].indexOf(s)
+                  ? 'bg-primary/20 text-primary'
+                  : 'bg-muted text-muted-foreground'
+              }`}>
                 {['verify', 'details'].indexOf(step) > ['email', 'verify', 'details'].indexOf(s) ? (
                   <CheckCircle className="h-4 w-4" />
-                ) : (
-                  i + 1
-                )}
+                ) : (i + 1)}
               </div>
               {i < 2 && (
-                <div
-                  className={`w-12 h-0.5 mx-1 ${
-                    ['verify', 'details'].indexOf(step) > i ? 'bg-primary' : 'bg-muted'
-                  }`}
-                />
+                <div className={`w-12 h-0.5 mx-1 ${
+                  ['verify', 'details'].indexOf(step) > i ? 'bg-primary' : 'bg-muted'
+                }`} />
               )}
             </div>
           ))}
@@ -158,52 +155,32 @@ export default function SignUpPage() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter className="flex flex-col gap-3">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Spinner className="mr-2" />
-                  Sending code...
-                </>
-              ) : (
-                <>
-                  Continue
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </>
-              )}
+              {isLoading ? <><Spinner className="mr-2" />Sending code...</> : <>Continue <ArrowRight className="ml-2 h-4 w-4" /></>}
             </Button>
-            <div className="relative">
+
+            <div className="relative w-full">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-muted"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or</span>
+                <span className="bg-card px-2 text-muted-foreground">Or sign up with</span>
               </div>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={handleGoogleSignUp}
-              disabled={isGoogleLoading}
-            >
-              {isGoogleLoading ? (
-                <>
-                  <Spinner className="mr-2 h-4 w-4" />
-                  Signing up...
-                </>
-              ) : (
-                <>
-                  <Chrome className="mr-2 h-4 w-4" />
-                  Sign up with Google
-                </>
-              )}
-            </Button>
+
+            <div className="grid grid-cols-2 gap-3 w-full">
+              <Button type="button" variant="outline" onClick={handleGoogleSignUp} disabled={isGoogleLoading}>
+                {isGoogleLoading ? <Spinner className="h-4 w-4" /> : <><Chrome className="mr-2 h-4 w-4" />Google</>}
+              </Button>
+              <Button type="button" variant="outline" onClick={handleGitHubSignUp} disabled={isGitHubLoading}>
+                {isGitHubLoading ? <Spinner className="h-4 w-4" /> : <><Github className="mr-2 h-4 w-4" />GitHub</>}
+              </Button>
+            </div>
+
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{' '}
-              <Link href="/auth/login" className="font-medium text-primary hover:underline">
-                Sign in
-              </Link>
+              <Link href="/auth/login" className="font-medium text-primary hover:underline">Sign in</Link>
             </p>
           </CardFooter>
         </form>
@@ -234,20 +211,13 @@ export default function SignUpPage() {
                 required
               />
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full text-sm"
-              onClick={handleSendCode}
-              disabled={isLoading}
-            >
+            <Button type="button" variant="ghost" className="w-full text-sm" onClick={handleSendCode} disabled={isLoading}>
               Didn&apos;t receive the code? Resend
             </Button>
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={verificationCode.length !== 6}>
-              Verify email
-              <ArrowRight className="ml-2 h-4 w-4" />
+              Verify email <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </CardFooter>
         </form>
@@ -293,17 +263,7 @@ export default function SignUpPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Spinner className="mr-2" />
-                  Creating account...
-                </>
-              ) : (
-                <>
-                  Create account
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </>
-              )}
+              {isLoading ? <><Spinner className="mr-2" />Creating account...</> : <>Create account <ArrowRight className="ml-2 h-4 w-4" /></>}
             </Button>
             <p className="text-xs text-center text-muted-foreground">
               By creating an account, you agree to our{' '}
