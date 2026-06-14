@@ -9,13 +9,14 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
-import { signIn, signInWithGoogle } from '../actions'
-import { Mail, Lock, ArrowRight, Chrome } from 'lucide-react'
+import { signIn, signInWithGoogle, signInWithGitHub } from '../actions'
+import { Mail, Lock, ArrowRight, Chrome, Github } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [isGitHubLoading, setIsGitHubLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -42,9 +43,23 @@ export default function LoginPage() {
         window.location.href = result.url
       }
     } catch (error) {
-      console.error('[v0] Google sign in error:', error)
+      console.error('Google sign in error:', error)
       toast.error('Failed to sign in with Google')
       setIsGoogleLoading(false)
+    }
+  }
+
+  async function handleGitHubSignIn() {
+    setIsGitHubLoading(true)
+    try {
+      const result = await signInWithGitHub('signin')
+      if (result?.url) {
+        window.location.href = result.url
+      }
+    } catch (error) {
+      console.error('GitHub sign in error:', error)
+      toast.error('Failed to sign in with GitHub')
+      setIsGitHubLoading(false)
     }
   }
 
@@ -95,7 +110,7 @@ export default function LoginPage() {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4">
+        <CardFooter className="flex flex-col gap-3">
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
@@ -109,33 +124,49 @@ export default function LoginPage() {
               </>
             )}
           </Button>
-          <div className="relative">
+
+          <div className="relative w-full">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-muted"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or</span>
+              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
             </div>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={handleGoogleSignIn}
-            disabled={isGoogleLoading}
-          >
-            {isGoogleLoading ? (
-              <>
-                <Spinner className="mr-2 h-4 w-4" />
-                Signing in...
-              </>
-            ) : (
-              <>
-                <Chrome className="mr-2 h-4 w-4" />
-                Sign in with Google
-              </>
-            )}
-          </Button>
+
+          <div className="grid grid-cols-2 gap-3 w-full">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGoogleSignIn}
+              disabled={isGoogleLoading}
+            >
+              {isGoogleLoading ? (
+                <Spinner className="h-4 w-4" />
+              ) : (
+                <>
+                  <Chrome className="mr-2 h-4 w-4" />
+                  Google
+                </>
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGitHubSignIn}
+              disabled={isGitHubLoading}
+            >
+              {isGitHubLoading ? (
+                <Spinner className="h-4 w-4" />
+              ) : (
+                <>
+                  <Github className="mr-2 h-4 w-4" />
+                  GitHub
+                </>
+              )}
+            </Button>
+          </div>
+
           <p className="text-sm text-center text-muted-foreground">
             Don&apos;t have an account?{' '}
             <Link href="/auth/signup" className="text-primary hover:underline font-medium">
